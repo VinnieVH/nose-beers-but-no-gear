@@ -1,5 +1,6 @@
 import React, { useEffect, useState, createContext, useContext } from 'react'
 import type { GuildContextType, GuildInfo, Member, Log } from './types'
+import { fetchGuildInfo, fetchGuildMembers, fetchGuildLogs } from '../services/warcraftlogsApi'
 const GuildContext = createContext<GuildContextType | null>(null)
 export const useGuild = () => {
   const context = useContext(GuildContext)
@@ -18,18 +19,57 @@ export const GuildProvider = ({ children }: { children: React.ReactNode }) => {
     const loadGuildData = async () => {
       try {
         setLoading(true)
-        // For now, use Pandaria-themed placeholder data
-        const guildData = {
+        setError(null)
+        
+        const guildName = 'Radon'
+        const serverName = 'Pyrewood Village'
+        const serverRegion = 'eu'
+
+        // Fetch all guild data concurrently
+        const [guildInfoData, membersData, logsData] = await Promise.all([
+          fetchGuildInfo(guildName, serverName, serverRegion),
+          fetchGuildMembers(guildName, serverName, serverRegion),
+          fetchGuildLogs(guildName, serverName, serverRegion)
+        ])
+
+        // Update guild info with actual member count
+        const updatedGuildInfo = {
+          ...guildInfoData,
+          memberCount: membersData.length
+        }
+
+        // Transform logs data to match expected format
+        const transformedLogs = logsData.map((log, index) => ({
+          id: index + 1,
+          raid: log.zoneName,
+          date: new Date(log.start).toISOString().split('T')[0],
+          kills: 0, // Would need to calculate from fights data
+          wipes: 0, // Would need to calculate from fights data
+          bestPerformance: 75 + Math.floor(Math.random() * 25) // Placeholder calculation
+        }))
+
+        setGuildInfo(updatedGuildInfo)
+        setMembers(membersData)
+        setLogs(transformedLogs)
+      } catch (err) {
+        console.error('Failed to load guild data:', err)
+        setError(
+          'Failed to load guild data from WarcraftLogs. This might be due to missing API credentials or network issues. Using fallback data.',
+        )
+        
+        // Fallback to placeholder data on error
+        const fallbackGuildData = {
           name: 'Nose Beers But No Gear',
           realm: 'Pyrewood Village',
           faction: 'Alliance',
           created: '2012-09-25T00:00:00Z',
           level: 25,
-          memberCount: 69,
+          memberCount: 6,
           description:
             'A cheeky guild of mischief-makers focused on having fun while still clearing content. We take our beer seriously, but not much else!',
         }
-        const memberData = [
+        
+        const fallbackMemberData = [
           {
             name: 'Brewmaster',
             level: 90,
@@ -73,7 +113,8 @@ export const GuildProvider = ({ children }: { children: React.ReactNode }) => {
             role: 'DPS',
           },
         ]
-        const logsData = [
+        
+        const fallbackLogsData = [
           {
             id: 1,
             raid: "Mogu'shan Vaults",
@@ -99,18 +140,15 @@ export const GuildProvider = ({ children }: { children: React.ReactNode }) => {
             bestPerformance: 92,
           },
         ]
-        setGuildInfo(guildData)
-        setMembers(memberData)
-        setLogs(logsData)
-      } catch (err) {
-        console.error('Failed to load guild data:', err)
-        setError(
-          'Failed to load guild data. Please try again later. Maybe the Sha of Anger got to our servers?',
-        )
+        
+        setGuildInfo(fallbackGuildData)
+        setMembers(fallbackMemberData)
+        setLogs(fallbackLogsData)
       } finally {
         setLoading(false)
       }
     }
+
     loadGuildData()
   }, [])
   return (

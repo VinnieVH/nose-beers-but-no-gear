@@ -51,7 +51,7 @@ const About = () => {
               className="w-16 h-16 rounded border-2 border-pandaria-accent mr-4"
             />
             <div>
-              <h2 className="text-3xl font-bold text-pandaria-accent">
+              <h2 className="text-3xl font-bold text-pandaria-secondary dark:text-pandaria-accent">
                 {guildInfo?.name}
               </h2>
               <p className="text-white">
@@ -83,7 +83,7 @@ const About = () => {
                 excessive time commitments from our members. This allows us to
                 maintain a healthy work/life/game balance.
               </p>
-              <h3 className="text-xl font-semibold text-pandaria-primary dark:text-pandaria-primaryLight mt-6 mb-3">
+              <h3 className="text-xl font-semibold text-pandaria-secondary dark:text-pandaria-accent mt-6 mb-3">
                 Our Values
               </h3>
               <ul className="list-disc pl-5 space-y-2">
@@ -122,7 +122,7 @@ const About = () => {
                   Above all, we're here to have fun and enjoy the game together.
                 </li>
               </ul>
-              <h3 className="text-xl font-semibold text-pandaria-primary dark:text-pandaria-primaryLight mt-6 mb-3">
+              <h3 className="text-xl font-semibold text-pandaria-secondary dark:text-pandaria-accent mt-6 mb-3">
                 Guild History
               </h3>
               <p>

@@ -50,7 +50,7 @@ const Home = () => {
       >
         <div className="absolute inset-0 bg-pandaria-dark/60 dark:bg-pandaria-dark/80"></div>
         <div className="container mx-auto px-4 h-full flex flex-col justify-center items-center relative z-10">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-pandaria-accent text-center mb-4 font-pandaren drop-shadow-lg">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-pandaria-secondary dark:text-pandaria-accent text-center mb-4 font-pandaren drop-shadow-lg">
             Nose Beers But No Gear
           </h1>
           <p className="text-xl md:text-2xl text-white text-center max-w-2xl drop-shadow-md">
@@ -66,7 +66,7 @@ const Home = () => {
             </Link>
             <Link
               to="/raids"
-              className="px-6 py-3 bg-pandaria-accent hover:bg-pandaria-accentLight dark:bg-pandaria-accentDark dark:hover:bg-pandaria-accent text-pandaria-dark dark:text-pandaria-dark rounded-full font-medium transition-colors shadow-lg"
+              className="px-6 py-3 bg-pandaria-accent hover:bg-pandaria-accentLight dark:bg-pandaria-accentDark dark:hover:bg-pandaria-accent text-pandaria-dark dark:text-white rounded-full font-medium transition-colors shadow-lg"
             >
               Raid Shenanigans
             </Link>
@@ -225,7 +225,7 @@ const Home = () => {
           </h2>
           <div className="max-w-3xl mx-auto bg-white dark:bg-pandaria-dark rounded-xl p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
             <p className="text-pandaria-dark dark:text-pandaria-light mb-6">
-              Nose Beers But No Gear is recruiting fun-loving players who don't
+              <span className="text-pandaria-secondary dark:text-pandaria-accent font-semibold">Nose Beers But No Gear</span> is recruiting fun-loving players who don't
               take themselves too seriously! We raid twice a week, drink thrice
               a week, and laugh every day. If you can take a joke and
               occasionally dish one out, you'll fit right in!
