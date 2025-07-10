@@ -42,7 +42,7 @@ const getRoleFromClass = (className: string): string => {
 const transformWowGuildData = (
   guild: WowGuild | null,
   roster: WowGuildRoster | null,
-  achievements: WowGuildAchievements | null,
+  _achievements: WowGuildAchievements | null,
   activity: WowGuildActivities | null
 ): GuildData => {
   // Transform guild info
@@ -158,7 +158,7 @@ export const wowApi = createApi({
           return { data: fallbackData }
         }
       },
-      providesTags: (result, error, { guildName, realmName, region }) => [
+      providesTags: (_result, _error, { guildName, realmName, region }) => [
         { type: 'WowGuildData', id: `${guildName}-${realmName}-${region}` }
       ],
     }),
@@ -174,7 +174,7 @@ export const wowApi = createApi({
           return { data: null }
         }
       },
-      providesTags: (result, error, { guildName, realmName, region }) => [
+      providesTags: (_result, _error, { guildName, realmName, region }) => [
         { type: 'WowGuildData', id: `info-${guildName}-${realmName}-${region}` }
       ],
     }),
@@ -190,7 +190,7 @@ export const wowApi = createApi({
           return { data: null }
         }
       },
-      providesTags: (result, error, { guildName, realmName, region }) => [
+      providesTags: (_result, _error, { guildName, realmName, region }) => [
         { type: 'WowGuildData', id: `roster-${guildName}-${realmName}-${region}` }
       ],
     }),
@@ -206,7 +206,7 @@ export const wowApi = createApi({
           return { data: null }
         }
       },
-      providesTags: (result, error, { guildName, realmName, region }) => [
+      providesTags: (_result, _error, { guildName, realmName, region }) => [
         { type: 'WowGuildData', id: `achievements-${guildName}-${realmName}-${region}` }
       ],
     }),
@@ -222,7 +222,7 @@ export const wowApi = createApi({
           return { data: null }
         }
       },
-      providesTags: (result, error, { guildName, realmName, region }) => [
+      providesTags: (_result, _error, { guildName, realmName, region }) => [
         { type: 'WowGuildData', id: `activity-${guildName}-${realmName}-${region}` }
       ],
     }),

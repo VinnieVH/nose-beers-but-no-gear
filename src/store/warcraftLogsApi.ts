@@ -146,7 +146,7 @@ export const warcraftLogsApi = createApi({
           return { data: fallbackData }
         }
       },
-      providesTags: (result, error, { guildName, serverName, serverRegion }) => [
+      providesTags: (_result, _error, { guildName, serverName, serverRegion }) => [
         { type: 'GuildData', id: `${guildName}-${serverName}-${serverRegion}` }
       ],
     }),
