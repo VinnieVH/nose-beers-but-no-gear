@@ -225,7 +225,7 @@ const Home = () => {
           </h2>
           <div className="max-w-3xl mx-auto bg-white dark:bg-pandaria-dark rounded-xl p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
             <p className="text-pandaria-dark dark:text-pandaria-light mb-6">
-              Pandaria Pranksters is recruiting fun-loving players who don't
+              Nose Beers But No Gear is recruiting fun-loving players who don't
               take themselves too seriously! We raid twice a week, drink thrice
               a week, and laugh every day. If you can take a joke and
               occasionally dish one out, you'll fit right in!
@@ -294,36 +294,6 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg border border-pandaria-primary/10 dark:border-pandaria-primary/30 hover:transform hover:scale-105 transition-transform">
-                <img
-                  src="https://wow.zamimg.com/images/wow/icons/large/achievement_character_pandaren_female.jpg"
-                  alt="Pandaren"
-                  className="w-10 h-10 mr-3 rounded-md"
-                />
-                <div>
-                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                    Pandaren
-                  </div>
-                  <div className="text-pandaria-primary dark:text-pandaria-primaryLight text-sm">
-                    Always Welcome!
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg border border-pandaria-primary/10 dark:border-pandaria-primary/30 hover:transform hover:scale-105 transition-transform">
-                <img
-                  src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_food_vendor_grummlefoot.jpg"
-                  alt="Chef"
-                  className="w-10 h-10 mr-3 rounded-md"
-                />
-                <div>
-                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                    Guild Chef
-                  </div>
-                  <div className="text-pandaria-secondary dark:text-pandaria-secondaryLight text-sm font-bold">
-                    URGENT!
-                  </div>
-                </div>
-              </div>
             </div>
             <div className="text-center">
               <a
@@ -333,7 +303,7 @@ const Home = () => {
                 className="px-6 py-3 bg-pandaria-secondary hover:bg-pandaria-secondaryLight dark:bg-pandaria-secondaryDark dark:hover:bg-pandaria-secondary text-white rounded-full font-medium transition-colors inline-flex items-center shadow-lg"
               >
                 <HeartIcon className="h-5 w-5 mr-2" />
-                Apply for Panda-monium
+                Apply for Nose Beers But No Gear
               </a>
             </div>
           </div>
