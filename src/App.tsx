@@ -1,34 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Route, Routes } from 'react-router'
+import { GuildProvider } from './context/GuildContext'
+import Home from './pages/Home'
+import { ThemeProvider } from './context/ThemeContext'
+import Header from './components/Header'
+import Footer from './components/Footer'
+import Roster from './pages/Roster'
+import Raids from './pages/Raids'
+import About from './pages/About'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+       <BrowserRouter>
+      <ThemeProvider>
+        <GuildProvider>
+          <div className="flex flex-col min-h-screen bg-pandaria-paper dark:bg-pandaria-darkpaper text-pandaria-dark dark:text-pandaria-light transition-colors duration-300">
+            <Header />
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/roster" element={<Roster />} />
+                <Route path="/raids" element={<Raids />} />
+                <Route path="/about" element={<About />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </GuildProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   )
 }
 
