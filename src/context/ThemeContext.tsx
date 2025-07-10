@@ -1,9 +1,5 @@
-import React, { useEffect, useState, createContext, useContext } from 'react'
-type ThemeContextType = {
-  isDarkMode: boolean
-  toggleTheme: () => void
-}
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+import React, { useEffect, useState } from 'react'
+import { ThemeContext } from './theme'
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   // Check if user has a preference stored in localStorage
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -41,11 +37,4 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </ThemeContext.Provider>
   )
-}
-export const useTheme = () => {
-  const context = useContext(ThemeContext)
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider')
-  }
-  return context
 }

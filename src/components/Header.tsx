@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { MenuIcon, XIcon, SunIcon, MoonIcon } from 'lucide-react'
-import { useTheme } from '../context/ThemeContext'
+import { useTheme } from '../hooks/useTheme'
 import wipeInc from '../assets/wipe-inc.jpg'
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)

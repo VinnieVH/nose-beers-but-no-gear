@@ -29,6 +29,32 @@
   --color-pandaria-bamboo: #5C7D3A;         /* bamboo stalk */
   --color-pandaria-blossom: #E6A3B0;        /* subtle plum blossom */
 
+  /* WoW Class Colors */
+  --color-class-death-knight: #C41E3A;      /* Red */
+  --color-class-demon-hunter: #A330C9;      /* Dark Magenta */
+  --color-class-druid: #FF7C0A;             /* Orange */
+  --color-class-evoker: #33937F;            /* Dark Emerald */
+  --color-class-hunter: #AAD372;            /* Pistachio */
+  --color-class-mage: #3FC7EB;              /* Light Blue */
+  --color-class-monk: #00FF98;              /* Spring Green */
+  --color-class-paladin: #F48CBA;           /* Pink */
+  --color-class-priest: #FFFFFF;            /* White */
+  --color-class-rogue: #FFF468;             /* Yellow */
+  --color-class-shaman: #0070DD;            /* Blue */
+  --color-class-warlock: #8788EE;           /* Purple */
+  --color-class-warrior: #C69B6D;           /* Tan */
+
+  /* WoW Quality/Performance Colors */
+  --color-quality-poor: #9D9D9D;            /* Gray */
+  --color-quality-common: #FFFFFF;          /* White */
+  --color-quality-uncommon: #1EFF00;        /* Green */
+  --color-quality-rare: #0070DD;            /* Blue */
+  --color-quality-epic: #A335EE;            /* Purple */
+  --color-quality-legendary: #FF8000;       /* Orange */
+  --color-quality-artifact: #E6CC80;        /* Light Gold */
+  --color-quality-heirloom: #00CCFF;        /* Blizzard Blue */
+  --color-quality-token: #00CCFF;           /* Blizzard Blue */
+
   /* Font Family */
   --font-pandaren: 'Roboto', sans-serif;
 }

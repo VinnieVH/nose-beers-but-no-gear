@@ -1,21 +1,42 @@
 import { useState } from 'react'
-import { useGuild } from '../context/GuildContext'
+import { useGuildData } from '../hooks/useGuildData'
 import { SearchIcon, FilterIcon } from 'lucide-react'
-import { useAsyncState } from '../hooks/useAsyncState'
 import { getClassColor, getClassBadgeColor } from '../utils/classColors'
 
 const Roster = () => {
-  const { members } = useGuild()
-  const { renderLoadingOrError, isReady } = useAsyncState({
-    loadingMessage: "Loading guild roster...",
-    errorTitle: "Error"
-  })
+  const { members, loading, error } = useGuildData()
   const [searchTerm, setSearchTerm] = useState('')
   const [classFilter, setClassFilter] = useState('')
   const [roleFilter, setRoleFilter] = useState('')
 
-  if (!isReady) {
-    return renderLoadingOrError()
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <div className="w-16 h-16 border-4 border-pandaria-primary dark:border-pandaria-primaryLight border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p className="mt-4 text-pandaria-dark dark:text-pandaria-light">
+          Loading guild roster...
+        </p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <div className="bg-pandaria-secondary/10 dark:bg-pandaria-secondary/20 border border-pandaria-secondary rounded-lg p-6 max-w-md mx-auto">
+          <h2 className="text-xl text-pandaria-secondary dark:text-pandaria-secondaryLight mb-2">
+            Error
+          </h2>
+          <p className="text-pandaria-dark dark:text-pandaria-light">{error}</p>
+          <button
+            className="mt-4 px-4 py-2 bg-pandaria-secondary hover:bg-pandaria-secondaryLight dark:bg-pandaria-secondaryDark dark:hover:bg-pandaria-secondary text-white rounded"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
   }
   // Filter members based on search term and filters
   const filteredMembers = members.filter((member) => {

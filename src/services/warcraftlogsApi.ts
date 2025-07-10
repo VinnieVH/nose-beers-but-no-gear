@@ -1,8 +1,10 @@
 import type { WarcraftLogsGuild, WarcraftLogsReport, WarcraftLogsCharacter, OAuthTokenResponse, Fight } from './types'
+import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '../config/guild'
 
 class WarcraftLogsAPI {
   private accessToken: string | null = null
   private tokenExpiration: number = 0
+  private tokenPromise: Promise<string> | null = null
   private readonly baseURL = 'https://classic.warcraftlogs.com'
   private readonly clientId = import.meta.env.VITE_WARCRAFTLOGS_CLIENT_ID
   private readonly clientSecret = import.meta.env.VITE_WARCRAFTLOGS_CLIENT_SECRET
@@ -14,38 +16,52 @@ class WarcraftLogsAPI {
   }
 
   private async getAccessToken(): Promise<string> {
+    // If we have a valid token, return it
     if (this.accessToken && Date.now() < this.tokenExpiration) {
       return this.accessToken
+    }
+
+    // If there's already a token request in progress, wait for it
+    if (this.tokenPromise) {
+      return this.tokenPromise
     }
 
     if (!this.clientId || !this.clientSecret) {
       throw new Error('WarcraftLogs API credentials not configured')
     }
 
-    try {
-      const credentials = btoa(`${this.clientId}:${this.clientSecret}`)
-      const response = await fetch(`${this.baseURL}/oauth/token`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${credentials}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'grant_type=client_credentials'
-      })
+    // Create a new token request promise
+    this.tokenPromise = (async () => {
+      try {
+        const credentials = btoa(`${this.clientId}:${this.clientSecret}`)
+        const response = await fetch(`${this.baseURL}/oauth/token`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Basic ${credentials}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: 'grant_type=client_credentials'
+        })
 
-      if (!response.ok) {
-        throw new Error(`OAuth token request failed: ${response.status} ${response.statusText}`)
+        if (!response.ok) {
+          throw new Error(`OAuth token request failed: ${response.status} ${response.statusText}`)
+        }
+
+        const data: OAuthTokenResponse = await response.json()
+        this.accessToken = data.access_token
+        this.tokenExpiration = Date.now() + (data.expires_in * 1000) - 60000 // Refresh 1 minute early
+        
+        return this.accessToken
+      } catch (error) {
+        console.error('Failed to get WarcraftLogs access token:', error)
+        throw error
+      } finally {
+        // Clear the promise so new requests can be made
+        this.tokenPromise = null
       }
+    })()
 
-      const data: OAuthTokenResponse = await response.json()
-      this.accessToken = data.access_token
-      this.tokenExpiration = Date.now() + (data.expires_in * 1000) - 60000 // Refresh 1 minute early
-      
-      return this.accessToken
-    } catch (error) {
-      console.error('Failed to get WarcraftLogs access token:', error)
-      throw error
-    }
+    return this.tokenPromise
   }
 
   async makeGraphQLRequest<T = Record<string, unknown>>(query: string, variables?: Record<string, unknown>): Promise<T> {
@@ -106,7 +122,8 @@ class WarcraftLogsAPI {
         serverRegion
       })
 
-      return data.guildData?.guild || null
+      const result = data.guildData?.guild || null
+      return result
     } catch (error) {
       console.error('Failed to fetch guild:', error)
       return null
@@ -114,6 +131,8 @@ class WarcraftLogsAPI {
   }
 
   async fetchGuildReports(guildName: string, serverSlug: string, serverRegion: string, limit = 10): Promise<WarcraftLogsReport[]> {
+    // Updated query structure based on WarcraftLogs API docs
+    // Removed fights from the reports query since fights need to be queried separately per report
     const query = `
       query($guildName: String!, $serverSlug: String!, $serverRegion: String!, $limit: Int!) {
         reportData {
@@ -135,13 +154,6 @@ class WarcraftLogsAPI {
                 id
                 name
               }
-              fights {
-                id
-                name
-                kill
-                startTime
-                endTime
-              }
             }
           }
         }
@@ -156,19 +168,128 @@ class WarcraftLogsAPI {
         limit
       })
 
-      return data.reportData?.reports?.data || []
+      const reports = data.reportData?.reports?.data || []
+      
+      // For each report, we'll need to fetch fights separately if needed
+      // For now, return reports without fights to avoid expensive nested queries
+      return reports.map(report => ({
+        ...report,
+        fights: [] // Will be populated by separate fetchReportFights call if needed
+      }))
     } catch (error) {
       console.error('Failed to fetch guild reports:', error)
+      const fallback: WarcraftLogsReport[] = []
+      return fallback
+    }
+  }
+
+  // New method to fetch fights for a specific report with kill/wipe filtering
+  async fetchReportFights(
+    reportCode: string, 
+    killType?: 'kills' | 'wipes' | 'encounters' | 'trash',
+    encounterID?: number,
+    difficulty?: number
+  ): Promise<Fight[]> {
+    let killTypeValue: string | undefined
+    
+    // Map our simple enum to WarcraftLogs KillType values
+    switch (killType) {
+      case 'kills':
+        killTypeValue = 'Kills'
+        break
+      case 'wipes':
+        killTypeValue = 'Wipes'
+        break
+      case 'encounters':
+        killTypeValue = 'Encounters'
+        break
+      case 'trash':
+        killTypeValue = 'Trash'
+        break
+      default:
+        killTypeValue = undefined // No filter, get all fights
+    }
+
+    const query = `
+      query($code: String!, $killType: KillType, $encounterID: Int, $difficulty: Int) {
+        reportData {
+          report(code: $code) {
+            fights(
+              killType: $killType
+              encounterID: $encounterID
+              difficulty: $difficulty
+            ) {
+              id
+              name
+              kill
+              startTime
+              endTime
+              encounterID
+              difficulty
+              size
+              standardComposition
+            }
+          }
+        }
+      }
+    `
+
+    try {
+      const data = await this.makeGraphQLRequest<{ 
+        reportData: { 
+          report: { 
+            fights: Fight[] 
+          } 
+        } 
+      }>(query, {
+        code: reportCode,
+        killType: killTypeValue,
+        encounterID,
+        difficulty
+      })
+
+      return data.reportData?.report?.fights || []
+    } catch (error) {
+      console.error('Failed to fetch report fights:', error)
       return []
     }
   }
 
-  async fetchGuildMembers(guildName: string, serverSlug: string, serverRegion: string, limit = 50): Promise<WarcraftLogsCharacter[]> {
+  // New method to fetch reports with their fights (more expensive but complete)
+  async fetchGuildReportsWithFights(
+    guildName: string, 
+    serverSlug: string, 
+    serverRegion: string, 
+    limit = 10,
+    killType?: 'kills' | 'wipes' | 'encounters' | 'trash'
+  ): Promise<WarcraftLogsReport[]> {
+    // First get the basic reports
+    const reports = await this.fetchGuildReports(guildName, serverSlug, serverRegion, limit)
+    
+    // Then fetch fights for each report
+    const reportsWithFights = await Promise.all(
+      reports.map(async (report) => {
+        const fights = await this.fetchReportFights(report.code, killType)
+        return {
+          ...report,
+          fights
+        }
+      })
+    )
+    
+    return reportsWithFights
+  }
+
+  async fetchGuildMembers(guildName: string, serverSlug: string, serverRegion: string, limit = 100, guildId?: number): Promise<WarcraftLogsCharacter[]> {
     try {
-      // First get the guild ID
-      const guild = await this.fetchGuild(guildName, serverSlug, serverRegion)
-      if (!guild) {
-        throw new Error('Guild not found')
+      // Use provided guild ID or fetch it if not provided
+      let guildIdToUse = guildId
+      if (!guildIdToUse) {
+        const guild = await this.fetchGuild(guildName, serverSlug, serverRegion)
+        if (!guild) {
+          throw new Error('Guild not found')
+        }
+        guildIdToUse = guild.id
       }
 
       const query = `
@@ -193,14 +314,16 @@ class WarcraftLogsAPI {
       `
 
       const data = await this.makeGraphQLRequest<{ characterData: { characters: { data: WarcraftLogsCharacter[] } } }>(query, {
-        guildID: guild.id,
+        guildID: guildIdToUse,
         limit
       })
 
-      return data.characterData?.characters?.data || []
+      const result = data.characterData?.characters?.data || []
+      return result
     } catch (error) {
       console.error('Failed to fetch guild members:', error)
-      return []
+      const fallback: WarcraftLogsCharacter[] = []
+      return fallback
     }
   }
 }
@@ -208,91 +331,89 @@ class WarcraftLogsAPI {
 // Create a singleton instance
 const warcraftLogsAPI = new WarcraftLogsAPI()
 
-// Class ID to class name mapping for WoW classes
-const classIdToName: Record<number, string> = {
-  1: 'Warrior',
-  2: 'Paladin',
-  3: 'Hunter',
-  4: 'Rogue',
-  5: 'Priest',
-  6: 'Death Knight',
-  7: 'Shaman',
-  8: 'Mage',
-  9: 'Warlock',
-  10: 'Monk',
-  11: 'Druid',
-  12: 'Demon Hunter',
-  13: 'Evoker'
-}
-
 // Helper function to convert server name to slug
 const getServerSlug = (serverName: string): string => {
   return serverName.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')
 }
 
-// Export functions that match the existing API
-export const fetchGuildLogs = async (
-  guildName = 'Nose Beers But No Gear',
-  serverName = 'Pyrewood Village',
-  serverRegion = 'eu',
+// Export simple functions that just call the API without additional caching or transformation
+export const fetchGuildInfo = async (
+  guildName = GUILD_NAME,
+  serverName = GUILD_REALM, 
+  serverRegion = GUILD_REGION
 ) => {
-  try {
-    const serverSlug = getServerSlug(serverName)
-    const reports = await warcraftLogsAPI.fetchGuildReports(guildName, serverSlug, serverRegion, 20)
-    
-    return reports
-      .filter(report => report.zone) // Only include reports with a zone object
-      .map(report => ({
-        id: report.code,
-        title: report.title,
-        owner: report.owner.name,
-        start: report.startTime,
-        end: report.endTime,
-        zone: report.zone.id,
-        zoneName: report.zone.name,
-      }))
-  } catch (error) {
-    console.error('Error fetching guild logs:', error)
-    // Return fallback data if API fails
-    return [
-      {
-        id: 'fallback1',
-        title: 'Recent Raid (API Error)',
-        owner: 'Unknown',
-        start: Date.now() - 3600000,
-        end: Date.now(),
-        zone: 1000,
-        zoneName: 'Unknown Zone',
-      }
-    ]
-  }
+  const serverSlug = getServerSlug(serverName)
+  return await warcraftLogsAPI.fetchGuild(guildName, serverSlug, serverRegion)
 }
 
-export const fetchLogDetails = async (logId: string) => {
-  try {
-    // Note: For fight details, we would need the specific report code
-    // This is a simplified implementation
-    const query = `
-      query($code: String!) {
-        reportData {
-          report(code: $code) {
-            fights {
-              id
-              name
-              kill
-              startTime
-              endTime
-            }
-          }
-        }
-      }
-    `
+export const fetchGuildMembers = async (
+  guildName = GUILD_NAME,
+  serverName = GUILD_REALM,
+  serverRegion = GUILD_REGION
+) => {
+  const serverSlug = getServerSlug(serverName)
+  return await warcraftLogsAPI.fetchGuildMembers(guildName, serverSlug, serverRegion)
+}
 
-    const data = await warcraftLogsAPI.makeGraphQLRequest<{ reportData: { report: { fights: Fight[] } } }>(query, { code: logId })
+export const fetchGuildLogs = async (
+  guildName = GUILD_NAME,
+  serverName = GUILD_REALM,
+  serverRegion = GUILD_REGION,
+) => {
+  const serverSlug = getServerSlug(serverName)
+  return await warcraftLogsAPI.fetchGuildReports(guildName, serverSlug, serverRegion, 20)
+}
+
+// New function to fetch reports with fight details and kill/wipe filtering
+export const fetchGuildLogsWithFights = async (
+  guildName = GUILD_NAME,
+  serverName = GUILD_REALM,
+  serverRegion = GUILD_REGION,
+  killType?: 'kills' | 'wipes' | 'encounters' | 'trash'
+) => {
+  const serverSlug = getServerSlug(serverName)
+  return await warcraftLogsAPI.fetchGuildReportsWithFights(guildName, serverSlug, serverRegion, 20, killType)
+}
+
+// New function to fetch fights for a specific report
+export const fetchReportFights = async (
+  reportCode: string,
+  killType?: 'kills' | 'wipes' | 'encounters' | 'trash',
+  encounterID?: number,
+  difficulty?: number
+) => {
+  return await warcraftLogsAPI.fetchReportFights(reportCode, killType, encounterID, difficulty)
+}
+
+// Helper functions for common use cases
+export const fetchGuildKills = async (
+  guildName = GUILD_NAME,
+  serverName = GUILD_REALM,
+  serverRegion = GUILD_REGION
+) => {
+  return await fetchGuildLogsWithFights(guildName, serverName, serverRegion, 'kills')
+}
+
+export const fetchGuildWipes = async (
+  guildName = GUILD_NAME,
+  serverName = GUILD_REALM,
+  serverRegion = GUILD_REGION
+) => {
+  return await fetchGuildLogsWithFights(guildName, serverName, serverRegion, 'wipes')
+}
+
+export const fetchLogDetails = async (
+  logId: string,
+  killType?: 'kills' | 'wipes' | 'encounters' | 'trash',
+  encounterID?: number,
+  difficulty?: number
+) => {
+  try {
+    const fights = await warcraftLogsAPI.fetchReportFights(logId, killType, encounterID, difficulty)
     
     return {
-      fights: data.reportData?.report?.fights || [],
-      friendlies: [] // Would require additional query
+      fights,
+      friendlies: [] // Would require additional query for participant details
     }
   } catch (error) {
     console.error('Error fetching log details:', error)
@@ -304,90 +425,43 @@ export const fetchLogDetails = async (logId: string) => {
 }
 
 export const fetchPlayerPerformance = async (): Promise<{ totalDamage: number; dps: number; percentile: number }> => {
-  try {
-    // This would require more complex GraphQL queries for damage/healing tables
-    // For now, return placeholder data
-    return {
-      totalDamage: 0,
-      dps: 0,
-      percentile: 0,
-    }
-  } catch (error) {
-    console.error('Error fetching player performance:', error)
-    return {
-      totalDamage: 0,
-      dps: 0,
-      percentile: 0,
-    }
+  // This would require more complex GraphQL queries for damage/healing tables
+  // For now, return placeholder data
+  return {
+    totalDamage: 0,
+    dps: 0,
+    percentile: 0,
   }
 }
 
-// New function to fetch guild information
-export const fetchGuildInfo = async (
-  guildName = 'Wipe Inc',
-  serverName = 'Pyrewood Village', 
-  serverRegion = 'eu'
+// Optimized function that fetches all guild data with minimal API calls
+export const fetchAllGuildData = async (
+  guildName = GUILD_NAME,
+  serverName = GUILD_REALM,
+  serverRegion = GUILD_REGION,
+  includeFights = false,
+  killType?: 'kills' | 'wipes' | 'encounters' | 'trash'
 ) => {
-  try {
-    const serverSlug = getServerSlug(serverName)
-    const guild = await warcraftLogsAPI.fetchGuild(guildName, serverSlug, serverRegion)
-    
-    if (!guild) {
-      throw new Error('Guild not found')
-    }
-
-    return {
-      name: guild.name,
-      realm: guild.server.name,
-      faction: guild.faction.name,
-      created: '2012-09-25T00:00:00Z', // WarcraftLogs doesn't provide creation date
-      level: 25, // Guild level not available in API
-      memberCount: 0, // Will be updated when fetching members
-      description: 'A cheeky guild of mischief-makers focused on having fun while still clearing content.'
-    }
-  } catch (error) {
-    console.error('Error fetching guild info:', error)
-    // Return fallback data
-    return {
-      name: guildName,
-      realm: serverName,
-      faction: 'Alliance',
-      created: '2012-09-25T00:00:00Z',
-      level: 25,
-      memberCount: 0,
-      description: 'Guild information temporarily unavailable.'
-    }
+  const serverSlug = getServerSlug(serverName)
+  
+  // First fetch guild info to get the guild object with ID
+  const guildData = await warcraftLogsAPI.fetchGuild(guildName, serverSlug, serverRegion)
+  
+  if (!guildData) {
+    throw new Error('Guild not found')
   }
-}
-
-// New function to fetch guild members
-export const fetchGuildMembers = async (
-  guildName = 'Nose Beers But No Gear',
-  serverName = 'Pyrewood Village',
-  serverRegion = 'eu'
-) => {
-  try {
-    const serverSlug = getServerSlug(serverName)
-    const characters = await warcraftLogsAPI.fetchGuildMembers(guildName, serverSlug, serverRegion)
-    
-    return characters.map(character => ({
-      name: character.name,
-      level: character.level,
-      class: classIdToName[character.classID] || 'Unknown',
-      rank: 'Member', // WarcraftLogs doesn't provide guild rank
-      role: 'DPS' // Would need additional logic to determine role
-    }))
-  } catch (error) {
-    console.error('Error fetching guild members:', error)
-    // Return fallback data
-    return [
-      {
-        name: 'API Error',
-        level: 1,
-        class: 'Unknown',
-        rank: 'Member',
-        role: 'DPS'
-      }
-    ]
+  
+  // Now fetch members and reports concurrently, using the guild ID we already have
+  const [charactersData, reportsData] = await Promise.all([
+    warcraftLogsAPI.fetchGuildMembers(guildName, serverSlug, serverRegion, 100, guildData.id),
+    includeFights 
+      ? warcraftLogsAPI.fetchGuildReportsWithFights(guildName, serverSlug, serverRegion, 20, killType)
+      : warcraftLogsAPI.fetchGuildReports(guildName, serverSlug, serverRegion, 20)
+  ])
+  
+  return {
+    guildInfo: guildData,
+    members: charactersData,
+    reports: reportsData
   }
 }

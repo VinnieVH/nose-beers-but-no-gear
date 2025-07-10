@@ -1,10 +1,4 @@
-interface ProgressBarProps {
-  label: string
-  current: number
-  total: number
-  percentage?: number
-  color?: 'primary' | 'accent' | 'secondary'
-}
+import type { ProgressBarProps } from '../../shared/types'
 
 const ProgressBar = ({ label, current, total, percentage, color = 'primary' }: ProgressBarProps) => {
   const calculatedPercentage = percentage || (current / total) * 100

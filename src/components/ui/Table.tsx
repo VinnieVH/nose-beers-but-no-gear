@@ -1,17 +1,4 @@
-import { type ReactNode } from 'react'
-
-interface Column {
-  key: string
-  header: string
-  render?: (value: any, row: any) => ReactNode
-}
-
-interface TableProps {
-  data: any[]
-  columns: Column[]
-  emptyMessage?: string
-  className?: string
-}
+import type { TableProps } from '../../shared/types'
 
 const Table = ({ data, columns, emptyMessage = "No data available", className = '' }: TableProps) => {
   return (
@@ -41,7 +28,7 @@ const Table = ({ data, columns, emptyMessage = "No data available", className = 
                     {column.render 
                       ? column.render(row[column.key], row)
                       : <span className="text-sm text-pandaria-dark dark:text-pandaria-light/80">
-                          {row[column.key]}
+                          {String(row[column.key] ?? '')}
                         </span>
                     }
                   </td>

@@ -1,18 +1,5 @@
 import { Link } from 'react-router'
-
-interface HeroSectionProps {
-  title: string
-  subtitle: string
-  backgroundImage: string
-  primaryButton?: {
-    text: string
-    href: string
-  }
-  secondaryButton?: {
-    text: string
-    href: string
-  }
-}
+import type { HeroSectionProps } from '../../shared/types'
 
 const HeroSection = ({ 
   title, 

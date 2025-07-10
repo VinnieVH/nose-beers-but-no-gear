@@ -1,9 +1,4 @@
-interface ErrorDisplayProps {
-  error: string
-  title?: string
-  actionText?: string
-  onRetry?: () => void
-}
+import type { ErrorDisplayProps } from '../../shared/types'
 
 const ErrorDisplay = ({ 
   error, 

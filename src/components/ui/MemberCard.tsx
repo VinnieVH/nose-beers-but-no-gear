@@ -1,11 +1,5 @@
 import { getClassColor } from '../../utils/classColors'
-import type { Member } from '../../context/types'
-
-interface MemberCardProps {
-  member: Member
-  showRole?: boolean
-  className?: string
-}
+import type { MemberCardProps } from '../../shared/types'
 
 const MemberCard = ({ member, showRole = true, className = '' }: MemberCardProps) => {
   return (

@@ -33,7 +33,7 @@ const Footer = () => {
               About Our Pranks
             </Link>
             <a
-              href="https://discord.gg"
+              href="https://discord.gg/FWCgRQmpxk"
               target="_blank"
               rel="noopener noreferrer"
               className="text-pandaria-dark dark:text-pandaria-light hover:text-pandaria-secondary dark:hover:text-pandaria-accent font-medium"

@@ -1,6 +1,4 @@
-interface LoadingSpinnerProps {
-  message?: string
-}
+import type { LoadingSpinnerProps } from '../../shared/types'
 
 const LoadingSpinner = ({ message = "Loading..." }: LoadingSpinnerProps) => {
   return (

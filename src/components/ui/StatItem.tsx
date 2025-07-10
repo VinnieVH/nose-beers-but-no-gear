@@ -1,8 +1,4 @@
-interface StatItemProps {
-  label: string
-  value: string | number
-  className?: string
-}
+import type { StatItemProps } from '../../shared/types'
 
 const StatItem = ({ label, value, className = '' }: StatItemProps) => {
   return (

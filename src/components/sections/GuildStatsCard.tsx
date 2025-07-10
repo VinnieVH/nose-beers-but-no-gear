@@ -2,14 +2,7 @@ import { Link } from 'react-router'
 import { UsersIcon } from 'lucide-react'
 import Card from '../ui/Card'
 import StatItem from '../ui/StatItem'
-import type { GuildInfo } from '../../context/types'
-
-interface GuildStatsCardProps {
-  guildInfo: GuildInfo | null
-  showBeerCount?: boolean
-  showLearnMore?: boolean
-  className?: string
-}
+import type { GuildStatsCardProps } from '../../shared/types'
 
 const GuildStatsCard = ({ 
   guildInfo, 

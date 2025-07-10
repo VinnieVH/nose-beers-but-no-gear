@@ -1,11 +1,4 @@
-import { type ReactNode } from 'react'
-
-interface CardProps {
-  children: ReactNode
-  className?: string
-  title?: string
-  icon?: ReactNode
-}
+import type { CardProps } from '../../shared/types'
 
 const Card = ({ children, className = '', title, icon }: CardProps) => {
   return (

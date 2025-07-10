@@ -1,7 +1,30 @@
-import { useGuild } from '../context/GuildContext'
-import { CalendarIcon, UsersIcon, TrophyIcon, InfoIcon } from 'lucide-react'
+import { useGuildData } from '../hooks/useGuildData'
+import { useGetWowGuildAchievementsQuery, useGetWowGuildActivityQuery } from '../store/wowApi'
+import { CalendarIcon, UsersIcon, InfoIcon, StarIcon, ActivityIcon } from 'lucide-react'
+import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '../config/guild'
+
 const About = () => {
-  const { guildInfo, loading, error } = useGuild()
+  const { guildInfo, loading, error } = useGuildData()
+  
+  // Fetch additional WoW API data
+  const { 
+    data: achievements, 
+    isLoading: achievementsLoading 
+  } = useGetWowGuildAchievementsQuery({
+    guildName: GUILD_NAME,
+    realmName: GUILD_REALM,
+    region: GUILD_REGION
+  })
+
+  const { 
+    data: activity, 
+    isLoading: activityLoading 
+  } = useGetWowGuildActivityQuery({
+    guildName: GUILD_NAME,
+    realmName: GUILD_REALM,
+    region: GUILD_REGION
+  })
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
@@ -12,6 +35,7 @@ const About = () => {
       </div>
     )
   }
+
   if (error) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
@@ -30,15 +54,17 @@ const About = () => {
       </div>
     )
   }
+
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-8">
         About Our Guild
       </h1>
+
       {/* Guild Banner */}
       <div className="relative rounded-lg overflow-hidden h-64 mb-12">
         <img
-          src="https://bnetcmsus-a.akamaihd.net/cms/blog_header/RTSFS08YGYJ91562639994982.jpg"
+          src="https://assetsio.gnwcdn.com/pandaria-character.jpg?width=1920&height=1920&fit=bounds&quality=70&format=jpg&auto=webp"
           alt="Guild Banner"
           className="w-full h-full object-cover"
         />
@@ -46,7 +72,7 @@ const About = () => {
         <div className="absolute bottom-0 left-0 p-6">
           <div className="flex items-center">
             <img
-              src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg"
+              src="https://wow.zamimg.com/images/wow/icons/large/ui_allianceicon-round.jpg"
               alt="Guild Logo"
               className="w-16 h-16 rounded border-2 border-pandaria-accent mr-4"
             />
@@ -61,6 +87,7 @@ const About = () => {
           </div>
         </div>
       </div>
+
       {/* About Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         <div className="lg:col-span-2">
@@ -69,13 +96,6 @@ const About = () => {
               <InfoIcon className="mr-2 h-6 w-6" /> About Us
             </h2>
             <div className="prose prose-invert max-w-none text-pandaria-dark dark:text-pandaria-light">
-              <p>
-                Azeroth Legends is a semi-hardcore raiding guild focused on
-                progressing through all PvE content while maintaining a fun and
-                friendly environment. Founded in August 2019 at the launch of
-                WoW Classic, we've been steadily growing and tackling all
-                content the game has to offer.
-              </p>
               <p>
                 Our guild philosophy centers around balancing progression with
                 enjoyment. We believe that with proper preparation and
@@ -124,14 +144,7 @@ const About = () => {
               </ul>
               <h3 className="text-xl font-semibold text-pandaria-secondary dark:text-pandaria-accent mt-6 mb-3">
                 Guild History
-              </h3>
-              <p>
-                Founded at the launch of WoW Classic, Azeroth Legends quickly
-                established itself as a competent raiding guild on the Whitemane
-                server. We were among the first guilds on the server to clear
-                Molten Core and have since maintained a steady pace of
-                progression through all raid tiers.
-              </p>
+              </h3> 
               <p>Some of our notable achievements include:</p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>Server 5th Ragnaros kill</li>
@@ -142,6 +155,7 @@ const About = () => {
             </div>
           </div>
         </div>
+
         {/* Guild Info Sidebar */}
         <div className="space-y-8">
           <div className="bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
@@ -183,8 +197,112 @@ const About = () => {
                   {guildInfo?.realm}
                 </span>
               </div>
+              {achievements && (
+                <div className="flex justify-between">
+                  <span className="text-pandaria-dark/70 dark:text-pandaria-light/70">
+                    Achievement Points:
+                  </span>
+                  <span className="text-pandaria-dark dark:text-pandaria-light">
+                    {achievements.total_points.toLocaleString()}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Guild Achievements Section */}
+          <div className="bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
+            <h3 className="text-xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-4 flex items-center">
+              <StarIcon className="mr-2 h-5 w-5" /> Recent Achievements
+            </h3>
+            {achievementsLoading ? (
+              <div className="text-center py-4">
+                <div className="w-6 h-6 border-2 border-pandaria-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <p className="mt-2 text-sm text-pandaria-dark/70 dark:text-pandaria-light/70">Loading achievements...</p>
+              </div>
+            ) : achievements?.recent_events && achievements.recent_events.length > 0 ? (
+              <div className="space-y-3">
+                {achievements.recent_events.slice(0, 3).map((event, index) => (
+                  <div key={index} className="border-l-2 border-pandaria-accent pl-3">
+                    <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
+                      {event.achievement.name}
+                    </div>
+                    <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-xs">
+                      {new Date(event.completed_timestamp).toLocaleDateString()}
+                    </div>
+                    <div className="text-pandaria-secondary dark:text-pandaria-accent text-xs">
+                      {event.achievement.points} points
+                    </div>
+                  </div>
+                ))}
+                {achievements.recent_events.length > 3 && (
+                  <div className="text-center pt-2">
+                    <span className="text-pandaria-secondary dark:text-pandaria-accent text-sm">
+                      +{achievements.recent_events.length - 3} more achievements
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-sm">
+                  No recent achievements found
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Guild Activity Section */}
+          <div className="bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
+            <h3 className="text-xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-4 flex items-center">
+              <ActivityIcon className="mr-2 h-5 w-5" /> Recent Activity
+            </h3>
+            {activityLoading ? (
+              <div className="text-center py-4">
+                <div className="w-6 h-6 border-2 border-pandaria-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <p className="mt-2 text-sm text-pandaria-dark/70 dark:text-pandaria-light/70">Loading activity...</p>
+              </div>
+            ) : activity?.activities && activity.activities.length > 0 ? (
+              <div className="space-y-3">
+                {activity.activities.slice(0, 4).map((act, index) => (
+                  <div key={index} className="border-l-2 border-pandaria-primary pl-3">
+                    {act.encounter_completed && (
+                      <>
+                        <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
+                          {act.encounter_completed.encounter.name} defeated
+                        </div>
+                        <div className="text-pandaria-secondary dark:text-pandaria-accent text-xs">
+                          {act.encounter_completed.mode.name} mode
+                        </div>
+                      </>
+                    )}
+                    {act.character_achievement && (
+                      <>
+                        <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
+                          {act.character_achievement.character.name} earned "{act.character_achievement.achievement.name}"
+                        </div>
+                      </>
+                    )}
+                    {act.guild_achievement && (
+                      <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
+                        Guild earned "{act.guild_achievement.achievement.name}"
+                      </div>
+                    )}
+                    <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-xs">
+                      {new Date(act.timestamp).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-sm">
+                  No recent activity found
+                </p>
+              </div>
+            )}
+          </div>
+
           <div className="bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
             <h3 className="text-xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-4 flex items-center">
               <CalendarIcon className="mr-2 h-5 w-5" /> Raid Schedule
@@ -208,7 +326,7 @@ const About = () => {
               </div>
               <div>
                 <div className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                  PvP Night
+                  Alt Night
                 </div>
                 <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-sm">
                   Monday 8:00 PM - 10:00 PM
@@ -216,67 +334,9 @@ const About = () => {
               </div>
             </div>
           </div>
-          <div className="bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
-            <h3 className="text-xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-4 flex items-center">
-              <TrophyIcon className="mr-2 h-5 w-5" /> Leadership
-            </h3>
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-pandaria-secondary dark:bg-pandaria-secondaryLight flex items-center justify-center mr-3">
-                  <span className="text-white font-bold">L</span>
-                </div>
-                <div>
-                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                    Lightbringer
-                  </div>
-                  <div className="text-pandaria-secondary dark:text-pandaria-accent text-sm">
-                    Guild Master
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-pandaria-primary dark:bg-pandaria-primaryLight flex items-center justify-center mr-3">
-                  <span className="text-white font-bold">S</span>
-                </div>
-                <div>
-                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                    Shadowstep
-                  </div>
-                  <div className="text-pandaria-secondary dark:text-pandaria-accent text-sm">
-                    Officer - Raid Leader
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-pandaria-accent dark:bg-pandaria-accentLight flex items-center justify-center mr-3">
-                  <span className="text-pandaria-dark font-bold">F</span>
-                </div>
-                <div>
-                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                    Firemage
-                  </div>
-                  <div className="text-pandaria-secondary dark:text-pandaria-accent text-sm">
-                    Officer - Recruitment
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-pandaria-primaryDark dark:bg-pandaria-primary flex items-center justify-center mr-3">
-                  <span className="text-white font-bold">H</span>
-                </div>
-                <div>
-                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                    Healbot
-                  </div>
-                  <div className="text-pandaria-secondary dark:text-pandaria-accent text-sm">
-                    Officer - Loot Council
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
+
       {/* Join Us Section */}
       <div className="bg-white dark:bg-pandaria-dark rounded-lg p-8 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
         <div className="max-w-3xl mx-auto text-center">
@@ -285,12 +345,12 @@ const About = () => {
           </h2>
           <p className="text-pandaria-dark dark:text-pandaria-light mb-6">
             We're always looking for skilled and dedicated players to join our
-            ranks. If you're interested in becoming a part of Azeroth Legends,
+            ranks. If you're interested in becoming a part of {GUILD_NAME},
             please reach out to us on Discord or in-game.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a
-              href="https://discord.gg"
+              href="https://discord.gg/FWCgRQmpxk"
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-pandaria-primary hover:bg-pandaria-primaryLight dark:bg-pandaria-primaryDark dark:hover:bg-pandaria-primary text-white rounded-md font-medium transition-colors inline-flex items-center justify-center"
@@ -314,4 +374,5 @@ const About = () => {
     </div>
   )
 }
+
 export default About

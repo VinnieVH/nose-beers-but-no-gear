@@ -1,5 +1,4 @@
 import { Link } from 'react-router'
-import { useGuild } from '../context/GuildContext'
 import {
   CalendarIcon,
   UsersIcon,
@@ -7,9 +6,13 @@ import {
   BeerIcon,
   HeartIcon,
 } from 'lucide-react'
+import { getClassColor } from '../utils/classColors'
+import { useGuildData } from '../hooks/useGuildData'
 
 const Home = () => {
-  const { guildInfo, members, logs, loading, error } = useGuild()
+  const { guildInfo, members, logs, loading, error } = useGuildData()
+
+  console.log(members);
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
@@ -297,7 +300,7 @@ const Home = () => {
             </div>
             <div className="text-center">
               <a
-                href="https://discord.gg"
+                href="https://discord.gg/FWCgRQmpxk"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-6 py-3 bg-pandaria-secondary hover:bg-pandaria-secondaryLight dark:bg-pandaria-secondaryDark dark:hover:bg-pandaria-secondary text-white rounded-full font-medium transition-colors inline-flex items-center shadow-lg"
@@ -381,21 +384,5 @@ const Home = () => {
     </div>
   )
 }
-// Helper function to get class colors for the new color theme
-const getClassColor = (className: string) => {
-  const classColors = {
-    Monk: 'bg-pandaria-primary',
-    Warrior: 'bg-pandaria-secondary',
-    Paladin: 'bg-pandaria-accent',
-    Hunter: 'bg-pandaria-primaryDark',
-    Rogue: 'bg-pandaria-accentDark',
-    Priest: 'bg-white dark:bg-gray-200',
-    Shaman: 'bg-pandaria-primary',
-    Mage: 'bg-pandaria-primaryLight',
-    Warlock: 'bg-pandaria-secondaryLight',
-    Druid: 'bg-pandaria-accentLight',
-    'Death Knight': 'bg-pandaria-secondaryDark',
-  }
-  return classColors[className as keyof typeof classColors] || 'bg-gray-500'
-}
+
 export default Home

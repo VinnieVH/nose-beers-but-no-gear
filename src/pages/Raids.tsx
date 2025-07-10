@@ -1,7 +1,7 @@
-import { useGuild } from '../context/GuildContext'
+import { useGuildData } from '../hooks/useGuildData'
 
 const Raids = () => {
-  const { logs, loading, error } = useGuild()
+  const { logs, loading, error } = useGuildData()
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">

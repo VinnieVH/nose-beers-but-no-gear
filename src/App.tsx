@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
-import { GuildProvider } from './context/GuildContext'
 import Home from './pages/Home'
 import { ThemeProvider } from './context/ThemeContext'
 import Header from './components/Header'
@@ -12,20 +11,18 @@ function App() {
   return (
        <BrowserRouter>
       <ThemeProvider>
-        <GuildProvider>
-          <div className="flex flex-col min-h-screen bg-pandaria-paper dark:bg-pandaria-darkpaper text-pandaria-dark dark:text-pandaria-light transition-colors duration-300">
-            <Header />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/roster" element={<Roster />} />
-                <Route path="/raids" element={<Raids />} />
-                <Route path="/about" element={<About />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-        </GuildProvider>
+        <div className="flex flex-col min-h-screen bg-pandaria-paper dark:bg-pandaria-darkpaper text-pandaria-dark dark:text-pandaria-light transition-colors duration-300">
+          <Header />
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/roster" element={<Roster />} />
+              <Route path="/raids" element={<Raids />} />
+              <Route path="/about" element={<About />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
       </ThemeProvider>
     </BrowserRouter>
   )
