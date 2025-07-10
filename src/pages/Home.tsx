@@ -17,7 +17,6 @@ const Home = (): React.JSX.Element => {
     window.location.reload()
   }, [])
 
-  console.log(members);
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">

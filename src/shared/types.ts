@@ -11,13 +11,12 @@ export interface OAuthTokenResponse {
 export interface Fight {
   id: number
   name: string
-  kill: boolean
+  kill: boolean | null  // true = boss kill, false = boss wipe, null = trash pack
   startTime: number
   endTime: number
   encounterID?: number
   difficulty?: number
   size?: number
-  standardComposition?: boolean
 }
 
 export interface WarcraftLogsGuild {

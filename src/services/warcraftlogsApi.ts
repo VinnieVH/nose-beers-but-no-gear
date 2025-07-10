@@ -227,7 +227,6 @@ class WarcraftLogsAPI {
               encounterID
               difficulty
               size
-              standardComposition
             }
           }
         }

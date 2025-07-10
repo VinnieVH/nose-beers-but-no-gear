@@ -67,11 +67,12 @@ export const warcraftLogsApi = createApi({
           // Import the optimized function that minimizes API calls
           const { fetchAllGuildData } = await import('../services/warcraftlogsApi')
           
-          // Fetch all data with minimal API calls
+          // Fetch all data with minimal API calls, including fights for kill/wipe calculations
           const { guildInfo: guildRawData, members: charactersData, reports: reportsData } = await fetchAllGuildData(
             guildName, 
             serverName, 
-            serverRegion
+            serverRegion,
+            true // includeFights = true to get fight data for kill/wipe calculations
           )
 
           // Transform guild info data
@@ -85,7 +86,6 @@ export const warcraftLogsApi = createApi({
             description: 'A cheeky guild of mischief-makers focused on having fun while still clearing content.'
           }
 
-          console.log("charactersData", charactersData);
           // Transform members data
           const members: Member[] = charactersData.map((character: WarcraftLogsCharacter) => ({
             name: character.name,
@@ -98,14 +98,20 @@ export const warcraftLogsApi = createApi({
           // Transform logs data
           const logs: Log[] = reportsData
             .filter((report: WarcraftLogsReport) => report.zone) // Only include reports with a zone object
-            .map((report: WarcraftLogsReport, index: number) => ({
-              id: index + 1,
-              raid: report.zone.name,
-              date: new Date(report.startTime).toISOString().split('T')[0],
-              kills: report.fights.filter((fight: Fight) => fight.kill).length,
-              wipes: report.fights.filter((fight: Fight) => !fight.kill).length,
-              bestPerformance: 75 + Math.floor(Math.random() * 25) // Placeholder calculation
-            }))
+            .map((report: WarcraftLogsReport, index: number) => {
+              // Only count boss fights (kill !== null), ignore trash packs (kill === null)
+              const kills = report.fights.filter((fight: Fight) => fight.kill === true).length
+              const wipes = report.fights.filter((fight: Fight) => fight.kill === false).length
+              
+              return {
+                id: index + 1,
+                raid: report.zone.name,
+                date: new Date(report.startTime).toISOString().split('T')[0],
+                kills,
+                wipes,
+                bestPerformance: 75 + Math.floor(Math.random() * 25) // Placeholder calculation
+              }
+            })
 
           return {
             data: {
