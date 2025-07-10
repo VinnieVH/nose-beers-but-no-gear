@@ -26,7 +26,7 @@ const HeroSection = ({
       className="relative bg-cover bg-center h-96"
       style={{ backgroundImage: `url('${backgroundImage}')` }}
     >
-      <div className="absolute inset-0 bg-pandaria-dark/60 dark:bg-pandaria-dark/80"></div>
+      <div className="absolute inset-0 bg-pandaria-dark/40 dark:bg-pandaria-dark/40"></div>
       <div className="container mx-auto px-4 h-full flex flex-col justify-center items-center relative z-10">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-pandaria-accent text-center mb-4 font-pandaren drop-shadow-lg">
           {title}

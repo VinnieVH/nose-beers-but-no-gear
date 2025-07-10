@@ -4,30 +4,37 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* Colors */
-  --color-pandaria-primary: #079C90;
-  --color-pandaria-secondary: #801214;
-  --color-pandaria-accent: #E7DB5A;
-  --color-pandaria-dark: #000000;
-  --color-pandaria-light: #FFFFFF;
-  --color-pandaria-paper: #F5F5F5;
-  --color-pandaria-darkpaper: #121212;
-  --color-pandaria-primary-light: #0FB5A9;
-  --color-pandaria-primary-dark: #057E74;
-  --color-pandaria-secondary-light: #9E2427;
-  --color-pandaria-secondary-dark: #6A0F11;
-  --color-pandaria-accent-light: #F0E68C;
-  --color-pandaria-accent-dark: #C8BD4F;
-  
+  /* Primary colors: jade + misty green */
+  --color-pandaria-primary: #3A9D8F;         /* deeper jade */
+  --color-pandaria-primary-light: #6EC6B8;  /* soft jade */
+  --color-pandaria-primary-dark: #267368;   /* dark jade */
+
+  /* Secondary: muted cherry blossom red */
+  --color-pandaria-secondary: #A43E3E;       
+  --color-pandaria-secondary-light: #D97373; 
+  --color-pandaria-secondary-dark: #7B2C2C;
+
+  /* Accent: gold (but more muted and aged) */
+  --color-pandaria-accent: #D4B350;         
+  --color-pandaria-accent-light: #EAD28A;
+  --color-pandaria-accent-dark: #A88B3A;
+
+  /* Neutrals: mist, stone, paper */
+  --color-pandaria-light: #F9F9F6;          /* mist/paper white */
+  --color-pandaria-dark: #1C1C1C;           /* deep stone black */
+  --color-pandaria-paper: #ECE7DA;          /* warm rice paper */
+  --color-pandaria-darkpaper: #2B2B2B;      /* dark parchment */
+
+  /* Optional additional: bamboo green & plum blossom pink */
+  --color-pandaria-bamboo: #5C7D3A;         /* bamboo stalk */
+  --color-pandaria-blossom: #E6A3B0;        /* subtle plum blossom */
+
   /* Font Family */
-  --font-pandaren: Georgia, serif;
-  
-  /* Breakpoints for dark mode */
-  --breakpoint-dark: ;
+  --font-pandaren: 'Noto Serif', serif; /* More scroll/pandaren-like */
 }
 /* DO NOT DELETE THESE TAILWIND IMPORTS, OTHERWISE THE STYLING WILL NOT RENDER AT ALL */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 .dark body {

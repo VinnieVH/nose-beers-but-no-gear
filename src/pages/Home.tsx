@@ -45,7 +45,7 @@ const Home = () => {
         className="relative bg-cover bg-center h-96"
         style={{
           backgroundImage:
-            "url('https://bnetcmsus-a.akamaihd.net/cms/gallery/IRVJRZ3HLDCF1364236751278.jpg')",
+            "url('https://c4.wallpaperflare.com/wallpaper/998/430/456/world-of-warcraft-warcraft-wow-art-wallpaper-preview.jpg')",
         }}
       >
         <div className="absolute inset-0 bg-pandaria-dark/60 dark:bg-pandaria-dark/80"></div>
@@ -54,7 +54,7 @@ const Home = () => {
             Nose Beers But No Gear
           </h1>
           <p className="text-xl md:text-2xl text-white text-center max-w-2xl drop-shadow-md">
-            Where we take our brews seriously, but everything else is fair game
+            Where we take our nose beers seriously, but everything else is fair game
             for a laugh!
           </p>
           <div className="mt-8 flex flex-wrap gap-4 justify-center">

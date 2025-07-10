@@ -38,84 +38,103 @@ const Raids = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
         {/* Progress Overview */}
         <div className="bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
-          <h2 className="text-2xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-6">
+        <h2 className="text-2xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-6">
             Current Progress
-          </h2>
-          <div className="space-y-6">
+        </h2>
+        <div className="space-y-6">
             <div>
-              <div className="flex justify-between mb-2">
+            <div className="flex justify-between mb-2">
                 <span className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                  Molten Core
+                Mogu'shan Vaults
                 </span>
                 <span className="text-pandaria-primary dark:text-pandaria-primaryLight">
-                  10/10
+                6/6
                 </span>
-              </div>
-              <div className="w-full bg-pandaria-paper dark:bg-pandaria-dark/50 rounded-full h-2.5">
+            </div>
+            <div className="w-full bg-pandaria-paper dark:bg-pandaria-dark/50 rounded-full h-2.5">
                 <div
-                  className="bg-pandaria-primary dark:bg-pandaria-primaryLight h-2.5 rounded-full"
-                  style={{
+                className="bg-pandaria-primary dark:bg-pandaria-primaryLight h-2.5 rounded-full"
+                style={{
                     width: '100%',
-                  }}
+                }}
                 ></div>
-              </div>
+            </div>
             </div>
             <div>
-              <div className="flex justify-between mb-2">
+            <div className="flex justify-between mb-2">
                 <span className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                  Blackwing Lair
+                Heart of Fear
                 </span>
                 <span className="text-pandaria-primary dark:text-pandaria-primaryLight">
-                  8/8
+                5/6
                 </span>
-              </div>
-              <div className="w-full bg-pandaria-paper dark:bg-pandaria-dark/50 rounded-full h-2.5">
+            </div>
+            <div className="w-full bg-pandaria-paper dark:bg-pandaria-dark/50 rounded-full h-2.5">
                 <div
-                  className="bg-pandaria-primary dark:bg-pandaria-primaryLight h-2.5 rounded-full"
-                  style={{
-                    width: '100%',
-                  }}
+                className="bg-pandaria-primary dark:bg-pandaria-primaryLight h-2.5 rounded-full"
+                style={{
+                    width: '83.3%',
+                }}
                 ></div>
-              </div>
+            </div>
             </div>
             <div>
-              <div className="flex justify-between mb-2">
+            <div className="flex justify-between mb-2">
                 <span className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                  Ahn'Qiraj
+                Terrace of Endless Spring
                 </span>
                 <span className="text-pandaria-accent dark:text-pandaria-accentLight">
-                  6/9
+                4/4
                 </span>
-              </div>
-              <div className="w-full bg-pandaria-paper dark:bg-pandaria-dark/50 rounded-full h-2.5">
+            </div>
+            <div className="w-full bg-pandaria-paper dark:bg-pandaria-dark/50 rounded-full h-2.5">
                 <div
-                  className="bg-pandaria-accent dark:bg-pandaria-accentLight h-2.5 rounded-full"
-                  style={{
-                    width: '66.7%',
-                  }}
+                className="bg-pandaria-accent dark:bg-pandaria-accentLight h-2.5 rounded-full"
+                style={{
+                    width: '100%',
+                }}
                 ></div>
-              </div>
+            </div>
             </div>
             <div>
-              <div className="flex justify-between mb-2">
+            <div className="flex justify-between mb-2">
                 <span className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                  Naxxramas
+                Throne of Thunder
+                </span>
+                <span className="text-pandaria-accent dark:text-pandaria-accentLight">
+                10/13
+                </span>
+            </div>
+            <div className="w-full bg-pandaria-paper dark:bg-pandaria-dark/50 rounded-full h-2.5">
+                <div
+                className="bg-pandaria-accent dark:bg-pandaria-accentLight h-2.5 rounded-full"
+                style={{
+                    width: '76.9%',
+                }}
+                ></div>
+            </div>
+            </div>
+            <div>
+            <div className="flex justify-between mb-2">
+                <span className="text-pandaria-dark dark:text-pandaria-light font-medium">
+                Siege of Orgrimmar
                 </span>
                 <span className="text-pandaria-secondary dark:text-pandaria-secondaryLight">
-                  3/15
+                8/14
                 </span>
-              </div>
-              <div className="w-full bg-pandaria-paper dark:bg-pandaria-dark/50 rounded-full h-2.5">
-                <div
-                  className="bg-pandaria-secondary dark:bg-pandaria-secondaryLight h-2.5 rounded-full"
-                  style={{
-                    width: '20%',
-                  }}
-                ></div>
-              </div>
             </div>
-          </div>
+            <div className="w-full bg-pandaria-paper dark:bg-pandaria-dark/50 rounded-full h-2.5">
+                <div
+                className="bg-pandaria-secondary dark:bg-pandaria-secondaryLight h-2.5 rounded-full"
+                style={{
+                    width: '57.1%',
+                }}
+                ></div>
+            </div>
+            </div>
         </div>
+        </div>
+
         {/* Best Performances */}
         <div className="bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
           <h2 className="text-2xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-6">
