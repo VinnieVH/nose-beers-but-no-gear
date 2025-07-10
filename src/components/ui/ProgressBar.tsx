@@ -1,6 +1,13 @@
-import type { ProgressBarProps } from '../../shared/types'
+import React from 'react'
+interface ProgressBarProps {
+  label: string
+  current: number
+  total: number
+  percentage?: number
+  color?: 'primary' | 'accent' | 'secondary'
+}
 
-const ProgressBar = ({ label, current, total, percentage, color = 'primary' }: ProgressBarProps) => {
+const ProgressBar = ({ label, current, total, percentage, color = 'primary' }: ProgressBarProps): React.JSX.Element => {
   const calculatedPercentage = percentage || (current / total) * 100
   
   const colorClasses = {

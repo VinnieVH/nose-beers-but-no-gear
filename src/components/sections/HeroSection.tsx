@@ -1,5 +1,18 @@
+import React from 'react'
 import { Link } from 'react-router'
-import type { HeroSectionProps } from '../../shared/types'
+interface HeroSectionProps {
+  title: string
+  subtitle: string
+  backgroundImage: string
+  primaryButton?: {
+    text: string
+    href: string
+  }
+  secondaryButton?: {
+    text: string
+    href: string
+  }
+}
 
 const HeroSection = ({ 
   title, 
@@ -7,7 +20,7 @@ const HeroSection = ({
   backgroundImage,
   primaryButton,
   secondaryButton
-}: HeroSectionProps) => {
+}: HeroSectionProps): React.JSX.Element => {
   return (
     <div
       className="relative bg-cover bg-center h-96"

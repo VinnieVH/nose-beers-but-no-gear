@@ -1,6 +1,12 @@
-import type { CardProps } from '../../shared/types'
+import React from 'react'
+interface CardProps {
+  title?: string
+  children: React.ReactNode
+  icon?: React.ReactNode
+  className?: string
+}
 
-const Card = ({ children, className = '', title, icon }: CardProps) => {
+const Card = ({ children, className = '', title, icon }: CardProps): React.JSX.Element => {
   return (
     <div className={`bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300 ${className}`}>
       {title && (

@@ -1,11 +1,37 @@
-import { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Link } from 'react-router'
 import { MenuIcon, XIcon, SunIcon, MoonIcon } from 'lucide-react'
 import { useTheme } from '../hooks/useTheme'
 import wipeInc from '../assets/wipe-inc.jpg'
-const Header = () => {
+
+interface NavLinkProps {
+  to: string
+  children: React.ReactNode
+}
+
+interface MobileNavLinkProps {
+  to: string
+  children: React.ReactNode
+  onClick: () => void
+}
+
+interface ThemeToggleProps {
+  isDarkMode: boolean
+  toggleTheme: () => void
+}
+
+const Header = (): React.JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { isDarkMode, toggleTheme } = useTheme()
+  
+  const handleMenuToggle = useCallback(() => {
+    setIsMenuOpen(!isMenuOpen)
+  }, [isMenuOpen])
+  
+  const handleCloseMenu = useCallback(() => {
+    setIsMenuOpen(false)
+  }, [])
+
   return (
     <header className="bg-white dark:bg-pandaria-dark border-b-2 border-pandaria-primary dark:border-pandaria-primary-dark shadow-md transition-colors duration-300">
       <div className="container mx-auto px-4 py-4">
@@ -38,7 +64,7 @@ const Header = () => {
           <div className="md:hidden flex items-center space-x-4">
             <ThemeToggle isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={handleMenuToggle}
               className="text-pandaria-dark dark:text-pandaria-light hover:text-pandaria-secondary dark:hover:text-pandaria-accent focus:outline-none"
             >
               {isMenuOpen ? (
@@ -53,16 +79,16 @@ const Header = () => {
         {isMenuOpen && (
           <nav className="md:hidden mt-4 py-3 border-t border-pandaria-primary/30 bg-white dark:bg-pandaria-dark rounded-b-lg shadow-lg transition-colors duration-300">
             <div className="flex flex-col space-y-3">
-              <MobileNavLink to="/" onClick={() => setIsMenuOpen(false)}>
+              <MobileNavLink to="/" onClick={handleCloseMenu}>
                 Home
               </MobileNavLink>
-              <MobileNavLink to="/roster" onClick={() => setIsMenuOpen(false)}>
+              <MobileNavLink to="/roster" onClick={handleCloseMenu}>
                 Roster
               </MobileNavLink>
-              <MobileNavLink to="/raids" onClick={() => setIsMenuOpen(false)}>
+              <MobileNavLink to="/raids" onClick={handleCloseMenu}>
                 Raids
               </MobileNavLink>
-              <MobileNavLink to="/about" onClick={() => setIsMenuOpen(false)}>
+              <MobileNavLink to="/about" onClick={handleCloseMenu}>
                 About
               </MobileNavLink>
             </div>
@@ -72,7 +98,8 @@ const Header = () => {
     </header>
   )
 }
-const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
+
+const NavLink = ({ to, children }: NavLinkProps): React.JSX.Element => (
   <Link
     to={to}
     className="text-pandaria-dark dark:text-pandaria-light hover:text-pandaria-secondary dark:hover:text-pandaria-accent transition-colors px-4 py-2 rounded-full hover:bg-pandaria-primary/10 dark:hover:bg-pandaria-primary/20 border border-transparent hover:border-pandaria-primary/20 font-medium"
@@ -80,7 +107,8 @@ const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) =>
     {children}
   </Link>
 )
-const MobileNavLink = ({ to, children, onClick }: { to: string; children: React.ReactNode; onClick: () => void }) => (
+
+const MobileNavLink = ({ to, children, onClick }: MobileNavLinkProps): React.JSX.Element => (
   <Link
     to={to}
     className="text-pandaria-dark dark:text-pandaria-light hover:text-pandaria-secondary dark:hover:text-pandaria-accent transition-colors block px-4 py-2 hover:bg-pandaria-primary/10 dark:hover:bg-pandaria-primary/20 rounded-lg"
@@ -89,7 +117,8 @@ const MobileNavLink = ({ to, children, onClick }: { to: string; children: React.
     {children}
   </Link>
 )
-const ThemeToggle = ({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleTheme: () => void }) => (
+
+const ThemeToggle = ({ isDarkMode, toggleTheme }: ThemeToggleProps): React.JSX.Element => (
   <button
     onClick={toggleTheme}
     className="p-2 rounded-full bg-pandaria-primary/10 dark:bg-pandaria-primary/20 hover:bg-pandaria-primary/20 dark:hover:bg-pandaria-primary/30 transition-colors"
@@ -102,4 +131,5 @@ const ThemeToggle = ({ isDarkMode, toggleTheme }: { isDarkMode: boolean; toggleT
     )}
   </button>
 )
+
 export default Header

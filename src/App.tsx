@@ -1,15 +1,16 @@
+import React from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
-import Home from './pages/Home'
-import { ThemeProvider } from './context/ThemeContext'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import { ThemeProvider } from './context/ThemeContext'
+import Home from './pages/Home'
 import Roster from './pages/Roster'
 import Raids from './pages/Raids'
 import About from './pages/About'
 
-function App() {
+const App = (): React.JSX.Element => {
   return (
-       <BrowserRouter>
+    <BrowserRouter>
       <ThemeProvider>
         <div className="flex flex-col min-h-screen bg-pandaria-paper dark:bg-pandaria-darkpaper text-pandaria-dark dark:text-pandaria-light transition-colors duration-300">
           <Header />

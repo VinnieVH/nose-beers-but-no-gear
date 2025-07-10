@@ -1,3 +1,4 @@
+import React, { useCallback } from 'react'
 import { Link } from 'react-router'
 import {
   CalendarIcon,
@@ -9,8 +10,12 @@ import {
 import { getClassColor } from '../utils/classColors'
 import { useGuildData } from '../hooks/useGuildData'
 
-const Home = () => {
+const Home = (): React.JSX.Element => {
   const { guildInfo, members, logs, loading, error } = useGuildData()
+
+  const handleReload = useCallback(() => {
+    window.location.reload()
+  }, [])
 
   console.log(members);
   if (loading) {
@@ -33,7 +38,7 @@ const Home = () => {
           <p className="text-pandaria-dark dark:text-pandaria-light">{error}</p>
           <button
             className="mt-4 px-4 py-2 bg-pandaria-secondary hover:bg-pandaria-secondaryLight dark:bg-pandaria-secondaryDark dark:hover:bg-pandaria-secondary text-white rounded-lg"
-            onClick={() => window.location.reload()}
+            onClick={handleReload}
           >
             Chase Those Hozen Away
           </button>
@@ -248,37 +253,7 @@ const Home = () => {
                     Monk
                   </div>
                   <div className="text-pandaria-primary dark:text-pandaria-primaryLight text-sm">
-                    High Priority
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg border border-pandaria-primary/10 dark:border-pandaria-primary/30 hover:transform hover:scale-105 transition-transform">
-                <img
-                  src="https://wow.zamimg.com/images/wow/icons/large/classicon_shaman.jpg"
-                  alt="Shaman"
-                  className="w-10 h-10 mr-3 rounded-md"
-                />
-                <div>
-                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                    Shaman
-                  </div>
-                  <div className="text-pandaria-primary dark:text-pandaria-primaryLight text-sm">
-                    High Priority
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg border border-pandaria-primary/10 dark:border-pandaria-primary/30 hover:transform hover:scale-105 transition-transform">
-                <img
-                  src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_beer_01.jpg"
-                  alt="Brewmaster"
-                  className="w-10 h-10 mr-3 rounded-md"
-                />
-                <div>
-                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                    Brewmaster
-                  </div>
-                  <div className="text-pandaria-accent dark:text-pandaria-accentLight text-sm">
-                    Medium Priority
+                    Tank/Healer
                   </div>
                 </div>
               </div>
@@ -292,92 +267,70 @@ const Home = () => {
                   <div className="text-pandaria-dark dark:text-pandaria-light font-medium">
                     Priest
                   </div>
-                  <div className="text-pandaria-secondary dark:text-pandaria-secondaryLight text-sm">
-                    Low Priority
+                  <div className="text-pandaria-primary dark:text-pandaria-primaryLight text-sm">
+                    Healer
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg border border-pandaria-primary/10 dark:border-pandaria-primary/30 hover:transform hover:scale-105 transition-transform">
+                <img
+                  src="https://wow.zamimg.com/images/wow/icons/large/classicon_rogue.jpg"
+                  alt="Rogue"
+                  className="w-10 h-10 mr-3 rounded-md"
+                />
+                <div>
+                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">
+                    Rogue
+                  </div>
+                  <div className="text-pandaria-primary dark:text-pandaria-primaryLight text-sm">
+                    DPS
                   </div>
                 </div>
               </div>
             </div>
-            <div className="text-center">
-              <a
-                href="https://discord.gg/FWCgRQmpxk"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 bg-pandaria-secondary hover:bg-pandaria-secondaryLight dark:bg-pandaria-secondaryDark dark:hover:bg-pandaria-secondary text-white rounded-full font-medium transition-colors inline-flex items-center shadow-lg"
-              >
-                <HeartIcon className="h-5 w-5 mr-2" />
-                Apply for Nose Beers But No Gear
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Raid Schedule */}
-      <div className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-pandaria-secondary dark:text-pandaria-accent text-center mb-8 font-pandaren">
-          When We Cause Trouble
-        </h2>
-        <div className="max-w-3xl mx-auto bg-white dark:bg-pandaria-dark rounded-xl p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
-          <div className="flex items-center mb-6">
-            <CalendarIcon className="h-6 w-6 text-pandaria-primary dark:text-pandaria-primaryLight mr-3" />
-            <h3 className="text-xl font-semibold text-pandaria-secondary dark:text-pandaria-accent font-pandaren">
-              Weekly Shenanigans
-            </h3>
-          </div>
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-pandaria-primary/10 dark:border-pandaria-primary/20">
-              <div>
-                <h4 className="text-lg font-medium text-pandaria-primary dark:text-pandaria-primaryLight">
-                  Mogu'shan Vaults
-                </h4>
-                <p className="text-pandaria-dark dark:text-pandaria-light">
-                  Where we turn stone guardians into garden gnomes
-                </p>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-lg font-semibold text-pandaria-primary dark:text-pandaria-primaryLight mb-2 font-pandaren">
+                    Raid Schedule:
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center text-pandaria-dark dark:text-pandaria-light">
+                      <CalendarIcon className="h-4 w-4 mr-2 text-pandaria-primary dark:text-pandaria-primaryLight" />
+                      <span>Tuesday & Thursday 8-11 PM EST</span>
+                    </div>
+                    <div className="flex items-center text-pandaria-dark dark:text-pandaria-light">
+                      <TrophyIcon className="h-4 w-4 mr-2 text-pandaria-primary dark:text-pandaria-primaryLight" />
+                      <span>Progression & Fun Focused</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-pandaria-primary dark:text-pandaria-primaryLight mb-2 font-pandaren">
+                    What We Offer:
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center text-pandaria-dark dark:text-pandaria-light">
+                      <BeerIcon className="h-4 w-4 mr-2 text-pandaria-primary dark:text-pandaria-primaryLight" />
+                      <span>Unlimited dad jokes</span>
+                    </div>
+                    <div className="flex items-center text-pandaria-dark dark:text-pandaria-light">
+                      <HeartIcon className="h-4 w-4 mr-2 text-pandaria-primary dark:text-pandaria-primaryLight" />
+                      <span>A friendly, welcoming community</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="mt-2 sm:mt-0">
-                <span className="inline-block px-4 py-1 bg-pandaria-primary/10 dark:bg-pandaria-primary/20 text-pandaria-primary dark:text-pandaria-primaryLight rounded-full text-sm font-medium">
-                  Wednesday 8:00 PM - 11:00 PM Server
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-pandaria-primary/10 dark:border-pandaria-primary/20">
-              <div>
-                <h4 className="text-lg font-medium text-pandaria-primary dark:text-pandaria-primaryLight">
-                  Heart of Fear
-                </h4>
-                <p className="text-pandaria-dark dark:text-pandaria-light">
-                  We're not scared, we just scream for fun!
-                </p>
-              </div>
-              <div className="mt-2 sm:mt-0">
-                <span className="inline-block px-4 py-1 bg-pandaria-primary/10 dark:bg-pandaria-primary/20 text-pandaria-primary dark:text-pandaria-primaryLight rounded-full text-sm font-medium">
-                  Sunday 7:00 PM - 11:00 PM Server
-                </span>
+              <div className="text-center pt-4">
+                <Link
+                  to="/about"
+                  className="inline-flex items-center px-6 py-3 bg-pandaria-primary hover:bg-pandaria-primaryLight dark:bg-pandaria-primaryDark dark:hover:bg-pandaria-primary text-white rounded-full font-medium transition-colors shadow-lg"
+                >
+                  <UsersIcon className="h-5 w-5 mr-2" />
+                  Join the Madness
+                </Link>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between">
-              <div>
-                <h4 className="text-lg font-medium text-pandaria-primary dark:text-pandaria-primaryLight">
-                  Pandaria Pub Crawl
-                </h4>
-                <p className="text-pandaria-dark dark:text-pandaria-light">
-                  Because we take our drinking seriously!
-                </p>
-              </div>
-              <div className="mt-2 sm:mt-0">
-                <span className="inline-block px-4 py-1 bg-pandaria-primary/10 dark:bg-pandaria-primary/20 text-pandaria-primary dark:text-pandaria-primaryLight rounded-full text-sm font-medium">
-                  Friday 8:00 PM - Until we can't stand
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="mt-6 pt-4 border-t border-pandaria-primary/10 dark:border-pandaria-primary/20">
-            <p className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-sm flex items-center">
-              <BeerIcon className="h-4 w-4 mr-2 text-pandaria-accent dark:text-pandaria-accentLight" />
-              Invites start 30 minutes before raid time. Please bring your own
-              brew and snacks!
-            </p>
           </div>
         </div>
       </div>

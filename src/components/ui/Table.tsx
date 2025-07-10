@@ -1,6 +1,18 @@
-import type { TableProps } from '../../shared/types'
+import React from 'react'
+interface TableColumn {
+  key: string
+  header: string
+  render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode
+}
 
-const Table = ({ data, columns, emptyMessage = "No data available", className = '' }: TableProps) => {
+interface TableProps {
+  data: Record<string, unknown>[]
+  columns: TableColumn[]
+  emptyMessage?: string
+  className?: string
+}
+
+const Table = ({ data, columns, emptyMessage = "No data available", className = '' }: TableProps): React.JSX.Element => {
   return (
     <div className={`bg-white dark:bg-pandaria-dark rounded-lg overflow-hidden border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300 ${className}`}>
       <div className="overflow-x-auto">

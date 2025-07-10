@@ -1,11 +1,17 @@
-import type { ErrorDisplayProps } from '../../shared/types'
+import React from 'react'
+interface ErrorDisplayProps {
+  error: string
+  title?: string
+  actionText?: string
+  onRetry?: () => void
+}
 
 const ErrorDisplay = ({ 
   error, 
   title = "Error", 
   actionText = "Try Again",
   onRetry = () => window.location.reload()
-}: ErrorDisplayProps) => {
+}: ErrorDisplayProps): React.JSX.Element => {
   return (
     <div className="container mx-auto px-4 py-16 text-center">
       <div className="bg-pandaria-secondary/10 dark:bg-pandaria-secondary/20 border border-pandaria-secondary rounded-lg p-6 max-w-md mx-auto">

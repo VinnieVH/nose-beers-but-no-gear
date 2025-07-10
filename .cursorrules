@@ -1,0 +1,300 @@
+# Cursor Rules for React TypeScript Project
+
+## 🚨 NON-NEGOTIABLE RULES
+
+### Templates & Styling
+1. **Do not use inline functions in JSX**
+   - Avoid: `<button onClick={() => doSomething()}>Click</button>`
+   - Use: Component methods with useCallback or extracted functions
+   - Exception: Simple functions that don't cause re-renders
+
+2. **Use enums or types derived from enums for string values**
+   - Avoid: `status: 'active' | 'inactive'`
+   - Use: `status: StatusEnum.ACTIVE | StatusEnum.INACTIVE`
+   - Create proper enum files in shared/types or utils
+
+3. **Avoid nesting useEffect hooks and complex async operations**
+   - Use proper async/await patterns, custom hooks, or state management
+   - Avoid multiple useEffect dependencies that trigger chain reactions
+   - Use AbortController for cleanup of async operations
+
+4. **Use either BEM or ABEM & adhere to its rules**
+   - BEM: Block__Element--Modifier
+   - ABEM: Atomic BEM (more flexible adaptation)
+   - Maintain consistent naming conventions across all CSS modules
+
+### General Coding Standards
+1. **Always type - `any` does not count**
+   - Every variable, parameter, and return type must be explicitly typed
+   - Use proper TypeScript interfaces and types
+   - Will be enforced via linting rules
+
+2. **Always include a return type for your functions**
+   - Explicit return types improve code clarity and catch errors early
+   - Applies to component functions, custom hooks, and utility functions
+   - Will be enforced via linting rules
+
+3. **Always define explicit prop interfaces for components**
+   - Every React component must have a typed props interface
+   - Use descriptive interface names: `UserCardProps`, `HeaderProps`
+   - Export interfaces when they might be reused
+
+4. **UI Component Props Types must be defined locally in the same file**
+   - Props interfaces should be in the same .tsx file as the component
+   - Place the interface directly above the component function
+   - Do not import props types from shared/types for UI components
+   - Exception: Only export and reuse prop interfaces when used by multiple components
+
+5. **Import from project-specific paths, not generic shared libraries**
+   - Use relative imports for local files
+   - Use absolute imports from src/ using path mapping
+   - Maintain consistent import organization
+
+6. **Don't use abbreviations while defining**
+   - Avoid: `usr`, `cust`, `prof`
+   - Use: `user`, `customer`, `profile`
+   - Prevents confusion and improves readability
+
+7. **Files must use kebab-case**
+   - Example: `user-profile.component.tsx`, `guild-stats-card.tsx`
+   - Only applies to new files, existing files will be updated incrementally
+   - Exception: React components can use PascalCase if preferred
+
+8. **Avoid optional typing `{example?: string}` when possible**
+   - Try to avoid optional properties in interfaces
+   - Optional properties make component contracts unclear
+   - Use union types with explicit undefined when necessary
+
+9. **Clean up server date strings ASAP**
+   - When importing API responses, transform date strings to Date objects
+   - Should be done in service layer or custom hooks
+   - Use proper type transformations in API response handlers
+
+10. **Don't return null/undefined for unimplemented functions, throw errors**
+    - Use explicit error throwing for not-implemented functionality
+    - Add proper error boundaries to catch and handle errors
+    - Makes debugging and development easier
+
+11. **Don't use `as` casting**
+    - Avoid: `user as IUser` or `data as any`
+    - Use: Type guards, proper typing, or type assertions with validation
+    - Especially avoid `as unknown` or `as any`
+
+12. **Use arrow functions for component methods and event handlers**
+    - Prevents binding issues and ensures proper `this` context
+    - Use useCallback for event handlers that are passed to child components
+
+### React-Specific Rules
+1. **No API data retrieval inside component bodies**
+   - Only custom hooks or context providers should retrieve data
+   - Components should only handle presentation logic
+   - Use custom hooks like `useGuildData` for data fetching
+
+2. **useEffect hooks must have proper cleanup**
+   - Use cleanup functions for subscriptions, timers, and event listeners
+   - Use AbortController for fetch requests
+   - Prevent memory leaks and race conditions
+
+3. **Use descriptive names for custom hooks**
+   - Custom hook names should start with `use` and be descriptive
+   - Example: `useGuildData`, `useTheme`, `useLocalStorage`
+   - Will be enforced via linting rules
+
+4. **Use proper dependency arrays in useEffect**
+   - Include all dependencies that are used inside useEffect
+   - Use eslint-plugin-react-hooks to enforce this rule
+   - Avoid empty dependency arrays unless intentional
+
+5. **Do not nest useEffect hooks**
+   - Use multiple useEffect hooks for different concerns
+   - Use custom hooks to abstract complex effect logic
+   - Avoid effect chains that trigger other effects
+
+6. **Avoid side effects during render**
+   - No API calls, DOM manipulation, or subscriptions in component body
+   - Move side effects to useEffect, event handlers, or custom hooks
+
+7. **Use optimized rendering strategies**
+   - Use React.memo for components that receive stable props
+   - Use useMemo and useCallback to prevent unnecessary re-renders
+   - Apply when performance issues are identified
+
+8. **Context providers should be scoped appropriately**
+   - Don't put all contexts at the app root level
+   - Scope contexts to the components that need them
+   - Use multiple smaller contexts instead of one large context
+
+9. **Component composition should be done through props and children**
+   - Use proper prop interfaces and children prop patterns
+   - Prefer composition over inheritance
+   - Makes components more reusable and testable
+
+### State Management Rules
+1. **Use appropriate state management for scope**
+   - useState for local component state
+   - useContext for shared state across components
+   - Redux/Zustand for global application state
+   - Custom hooks for shared stateful logic
+
+2. **State updates must be immutable**
+   - Always create new objects/arrays when updating state
+   - Use spread operators, Object.assign, or immutability libraries
+   - Never mutate state directly
+
+3. **Derived state should be computed, not stored**
+   - Use useMemo for expensive calculations
+   - Compute derived values in render or with useMemo
+   - Don't store computed values in separate state
+
+### Testing Rules
+1. **No code outside a describe block**
+   - All test code must be within describe blocks
+   - Maintains proper test organization and isolation
+
+2. **All variables must be initialized inside test functions**
+   - Variables should be initialized in: `beforeEach`, `it` block, or setup functions
+   - This is a MUST and prevents test pollution
+
+3. **Components must be tested with React Testing Library**
+   - Test behavior, not implementation details
+   - Use proper queries and user interactions
+   - Mock external dependencies and API calls
+
+4. **Custom hooks must be tested with renderHook**
+   - Use @testing-library/react-hooks for custom hook testing
+   - Test hook behavior and state changes
+   - Mock dependencies appropriately
+
+### Import Organization
+1. **Imports must be organized in this order:**
+   ```typescript
+   import React from 'react';
+   import { useState, useEffect } from 'react';
+   import { Button } from '@/components/ui/Button';
+   import { useGuildData } from '@/hooks/useGuildData';
+   import type { User, Guild } from '@/shared/types';
+   import './Component.css';
+   ```
+
+2. **Do not add comments above import sections**
+   - Avoid comments like `// React and external libraries` or `// Internal imports`
+   - Import organization should be self-evident from the order
+   - Keep imports clean and uncommented
+
+3. **Use consistent import aliases**
+   - Use `@/` for src root imports
+   - Group related imports together
+   - Use type-only imports when appropriate
+
+### File Organization
+1. **Component files should follow this structure:**
+   ```typescript
+   import React from 'react'
+   import { SomeUtility } from '../utils/someUtility'
+   import type { ExternalType } from '../shared/types'
+   
+   interface ComponentProps {
+     title: string
+     children: React.ReactNode
+     onClick?: () => void
+   }
+   
+   export const Component = ({ title, children, onClick }: ComponentProps): React.JSX.Element => {
+     // Hooks
+     // Event handlers
+     // Render
+   };
+   
+   export default Component;
+   ```
+
+2. **Export patterns:**
+   - Use named exports for utilities and hooks
+   - Use default exports for React components
+   - Export types and interfaces that are reused
+
+### Performance Rules
+1. **Minimize re-renders through proper memoization**
+   - Use React.memo for pure components
+   - Use useMemo for expensive calculations
+   - Use useCallback for event handlers passed to children
+
+2. **Optimize bundle size**
+   - Use dynamic imports for code splitting
+   - Tree-shake unused imports
+   - Use proper bundle analysis tools
+
+3. **Optimize images and assets**
+   - Use appropriate image formats and sizes
+   - Implement lazy loading for non-critical content
+   - Use proper caching strategies
+
+## 🎯 Naming Conventions
+
+### Files and Folders
+- **PascalCase**: Components, Hooks, Utils, Models, Enums, Interfaces
+- **kebab-case**: Folders, files, routes, CSS classes, CSS modules
+- **camelCase**: Variables, functions, methods, properties, custom hooks
+- **UPPER_SNAKE_CASE**: Constants, environment variables
+
+### Components
+- **Component files**: `ComponentName.tsx` or `component-name.tsx`
+- **Component function**: `ComponentName`
+- **Component props interface**: `ComponentNameProps` (defined locally in same file)
+- **Component directory**: `component-name/` (if complex with multiple files)
+- **Props interface placement**: Directly above the component function, not in imports section
+
+### Custom Hooks
+- **Hook files**: `useHookName.ts` or `use-hook-name.ts`
+- **Hook function**: `useHookName`
+- **Hook return interface**: `UseHookNameReturn` (if complex)
+
+### Services & Utilities
+- **API service files**: `api-name.api.ts` or `apiName.api.ts`
+- **Utility files**: `utility-name.ts` or `utilityName.ts`
+- **Service class/function**: `ApiNameService` or `utilityName`
+- **API functions**: `getUsers`, `createUser`, `updateUserProfile`
+
+### Models & Types
+- **Type files**: `model-name.types.ts` or `types.ts`
+- **Interface files**: `interface-name.interface.ts` or within types files
+- **Type aliases**: `UserData`, `ApiResponse`
+- **Interfaces**: `IUser`, `IApiResponse` or `User`, `ApiResponse`
+
+### Enums
+- **Enum files**: `enum-name.enum.ts` or within types files
+- **Enum**: `EnumName`
+- **Enum values**: `PascalCase` for descriptive names, `UPPER_SNAKE_CASE` for constants
+- **Example**: 
+  ```typescript
+  enum UserStatus {
+    Active = 'ACTIVE',
+    Inactive = 'INACTIVE',
+    Pending = 'PENDING'
+  }
+  ```
+
+### Context & State Management
+- **Context files**: `context-name.context.tsx`
+- **Context**: `ContextNameContext`
+- **Context provider**: `ContextNameProvider`
+- **Context hook**: `useContextName`
+
+### CSS & Styling
+- **CSS Module files**: `component-name.module.css`
+- **Styled component files**: `component-name.styles.ts`
+- **CSS classes**: `block-name__element-name--modifier` (BEM)
+- **CSS custom properties**: `--primary-color`, `--font-size-large`
+
+### Constants & Configuration
+- **Config files**: `config.ts`, `app-config.ts`
+- **Constants files**: `constants.ts`, `api-constants.ts`
+- **Environment files**: `.env`, `.env.local`, `.env.production`
+- **Constants**: `API_BASE_URL`, `DEFAULT_PAGE_SIZE`
+
+### Testing Files
+- **Test files**: `component-name.test.tsx`, `hook-name.test.ts`
+- **Mock files**: `component-name.mock.ts`, `api-name.mock.ts`
+- **Test utilities**: `test-utils.ts`, `testing-library-utils.ts`
+
+These rules should be enforced through ESLint, TypeScript compiler, and code review processes. 

@@ -1,6 +1,7 @@
+import React from 'react'
 import { Link } from 'react-router'
 
-const Footer = () => {
+const Footer = (): React.JSX.Element => {
   return (
     <footer className="bg-white dark:bg-pandaria-dark border-t-2 border-pandaria-primary/30 dark:border-pandaria-primary/20 py-6 transition-colors duration-300">
       <div className="container mx-auto px-4">

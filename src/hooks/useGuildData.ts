@@ -1,7 +1,16 @@
 import { useGetGuildDataQuery } from '../store/warcraftLogsApi'
 import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '../config/guild'
+import type { GuildInfo, Member, Log } from '../shared/types'
 
-export const useGuildData = () => {
+interface UseGuildDataReturn {
+  guildInfo: GuildInfo | null
+  members: Member[]
+  logs: Log[]
+  loading: boolean
+  error: string | null
+}
+
+export const useGuildData = (): UseGuildDataReturn => {
   const {
     data,
     isLoading,

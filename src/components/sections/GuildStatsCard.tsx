@@ -1,15 +1,23 @@
+import React from 'react'
 import { Link } from 'react-router'
 import { UsersIcon } from 'lucide-react'
 import Card from '../ui/Card'
 import StatItem from '../ui/StatItem'
-import type { GuildStatsCardProps } from '../../shared/types'
+import type { GuildInfo } from '../../shared/types'
+
+interface GuildStatsCardProps {
+  guildInfo: GuildInfo | null
+  showBeerCount?: boolean
+  showLearnMore?: boolean
+  className?: string
+}
 
 const GuildStatsCard = ({ 
   guildInfo, 
   showBeerCount = true, 
   showLearnMore = true,
   className = ''
-}: GuildStatsCardProps) => {
+}: GuildStatsCardProps): React.JSX.Element => {
   return (
     <Card 
       title="Guild Stats" 
