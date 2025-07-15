@@ -140,7 +140,7 @@ export interface WowAchievement {
 
 export interface WowGuildAchievement {
   achievement: WowAchievement
-  completed_timestamp: number
+  timestamp: number
 }
 
 export interface WowGuildAchievements {

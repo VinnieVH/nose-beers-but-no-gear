@@ -37,22 +37,13 @@ export default async function Home(): Promise<React.JSX.Element> {
   
   try {
     // Try to fetch from your API route using absolute URL
-    console.log('Attempting to fetch guild data...')
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://nose-beers-but-no-gear.vercel.app'
     const timestamp = Date.now() // Add timestamp to prevent caching
     const data = await fetch(`${baseUrl}/api/warcraft-logs?t=${timestamp}`, {
       cache: 'no-store' // Don't cache during build, always fetch fresh data
-    })
-    
-    console.log('Fetch response status:', data.status)
-    
+    })    
     if (data.ok) {
       const responseData: { guildInfo: GuildInfo; members: Member[]; logs: Log[] } = await data.json()
-      console.log('Successfully fetched data:', {
-        guildName: responseData.guildInfo.name,
-        memberCount: responseData.members.length,
-        logCount: responseData.logs.length
-      })
       guildInfo = responseData.guildInfo
       members = responseData.members
       logs = responseData.logs
