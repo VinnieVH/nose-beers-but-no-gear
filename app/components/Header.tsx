@@ -56,7 +56,9 @@ const Header = (): React.JSX.Element => {
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-4">
             <ThemeToggle />
-            <MobileMenuButton />
+            <Suspense fallback={null}>
+              <MobileMenuButton />
+            </Suspense>
           </div>
         </div>
         {/* Mobile Navigation */}
