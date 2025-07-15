@@ -233,6 +233,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       )
     }
 
+    // Check if API credentials are configured
+    if (!process.env.BLIZZARD_API_CLIENT_ID || !process.env.BLIZZARD_API_CLIENT_SECRET) {
+      console.error('Blizzard API credentials not configured in environment variables')
+      return NextResponse.json(
+        { error: 'Blizzard API credentials not configured' },
+        { status: 500 }
+      )
+    }
+
     const realmSlug = getRealmSlug(realmName)
     const guildSlug = getGuildSlug(guildName)
 

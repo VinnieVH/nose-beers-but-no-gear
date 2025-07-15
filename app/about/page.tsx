@@ -19,12 +19,10 @@ async function getGuildData(): Promise<GuildData> {
       region: GUILD_REGION
     })
 
-    // For server-side rendering, we need to construct the full URL
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
-    const host = process.env.VERCEL_URL || process.env.NEXT_PUBLIC_VERCEL_URL || 'localhost:3000'
-    const url = `${protocol}://${host}/api/blizzard?${params.toString()}`
+    // Use absolute URL for server-side requests
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://nose-beers-but-no-gear.vercel.app'
     
-    const response = await fetch(url, {
+    const response = await fetch(`${baseUrl}/api/blizzard?${params.toString()}`, {
       next: { revalidate: 3600 } // cache for 1 hour
     })
 
