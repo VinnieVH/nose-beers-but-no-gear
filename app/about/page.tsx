@@ -19,8 +19,13 @@ async function getGuildData(): Promise<GuildData> {
       region: GUILD_REGION
     })
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'}/api/blizzard?${params.toString()}`, {
-      next: { revalidate: 3600 } // Cache for 1 hour
+    // For server-side rendering, we need to construct the full URL
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
+    const host = process.env.VERCEL_URL || process.env.NEXT_PUBLIC_VERCEL_URL || 'localhost:3000'
+    const url = `${protocol}://${host}/api/blizzard?${params.toString()}`
+    
+    const response = await fetch(url, {
+      next: { revalidate: 3600 } // cache for 1 hour
     })
 
     if (!response.ok) {
@@ -42,8 +47,6 @@ async function getGuildData(): Promise<GuildData> {
 
 const About = async (): Promise<React.JSX.Element> => {
   const { guild, roster, achievements, activity } = await getGuildData();
-
-  console.log(activity);
 
   // Format guild info with fallbacks
   const guildInfo = {
@@ -211,7 +214,7 @@ const About = async (): Promise<React.JSX.Element> => {
             </h3>
             {achievements?.recent_events && achievements.recent_events.length > 0 ? (
               <div className="space-y-3">
-                                {achievements.recent_events.slice(0, 3).map((event, index) => (
+                {achievements.recent_events.slice(0, 3).map((event, index) => (
                    <div key={index} className="border-l-2 border-pandaria-accent pl-3">
                     <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
                       {event.achievement.name}
@@ -245,37 +248,45 @@ const About = async (): Promise<React.JSX.Element> => {
             <h3 className="text-xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-4 flex items-center">
               <ActivityIcon className="mr-2 h-5 w-5" /> Recent Activity
             </h3>
-            <div className="space-y-3">                
-              {activity?.activities.slice(0, 4).map((act, index) => (
-                  <div key={index} className="border-l-2 border-pandaria-primary pl-3">
-                    {act.encounter_completed && (
-                      <>
-                        <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
-                          {act.encounter_completed.encounter.name} defeated
-                        </div>
-                        <div className="text-pandaria-secondary dark:text-pandaria-accent text-xs">
-                          {act.encounter_completed.mode.name} mode
-                        </div>
-                      </>
-                    )}
-                                         {act.character_achievement && (
-                       <>
+            {activity?.activities && activity.activities.length > 0 ? (
+              <div className="space-y-3">                
+                {activity.activities.slice(0, 4).map((act, index) => (
+                    <div key={index} className="border-l-2 border-pandaria-primary pl-3">
+                      {act.encounter_completed && (
+                        <>
+                          <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
+                            {act.encounter_completed.encounter.name} defeated
+                          </div>
+                          <div className="text-pandaria-secondary dark:text-pandaria-accent text-xs">
+                            {act.encounter_completed.mode.name} mode
+                          </div>
+                        </>
+                      )}
+                      {act.character_achievement && (
+                         <>
+                           <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
+                             {act.character_achievement.character.name} earned &ldquo;{act.character_achievement.achievement.name}&rdquo;
+                           </div>
+                         </>
+                       )}
+                       {act.guild_achievement && (
                          <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
-                           {act.character_achievement.character.name} earned &ldquo;{act.character_achievement.achievement.name}&rdquo;
-                         </div>
-                       </>
-                     )}
-                     {act.guild_achievement && (
-                       <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
-                         Guild earned &ldquo;{act.guild_achievement.achievement.name}&rdquo;
-                        </div>
-                     )}
-                    <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-xs">
-                      {new Date(act.timestamp).toLocaleDateString('fr-FR')}
+                           Guild earned &ldquo;{act.guild_achievement.achievement.name}&rdquo;
+                          </div>
+                       )}
+                      <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-xs">
+                        {new Date(act.timestamp).toLocaleDateString('fr-FR')}
+                      </div>
                     </div>
-                  </div>
-                ))}
-            </div>
+                  ))}
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-sm">
+                  No recent activity found
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
