@@ -211,9 +211,8 @@ const About = async (): Promise<React.JSX.Element> => {
             </h3>
             {achievements?.recent_events && achievements.recent_events.length > 0 ? (
               <div className="space-y-3">
-                {achievements.recent_events.slice(0, 3).map((event, index) => (
-                  console.log(event),
-                  <div key={index} className="border-l-2 border-pandaria-accent pl-3">
+                                {achievements.recent_events.slice(0, 3).map((event, index) => (
+                   <div key={index} className="border-l-2 border-pandaria-accent pl-3">
                     <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
                       {event.achievement.name}
                     </div>
@@ -259,18 +258,18 @@ const About = async (): Promise<React.JSX.Element> => {
                         </div>
                       </>
                     )}
-                    {act.character_achievement && (
-                      <>
-                        <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
-                          {act.character_achievement.character.name} earned "{act.character_achievement.achievement.name}"
+                                         {act.character_achievement && (
+                       <>
+                         <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
+                           {act.character_achievement.character.name} earned &ldquo;{act.character_achievement.achievement.name}&rdquo;
+                         </div>
+                       </>
+                     )}
+                     {act.guild_achievement && (
+                       <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
+                         Guild earned &ldquo;{act.guild_achievement.achievement.name}&rdquo;
                         </div>
-                      </>
-                    )}
-                    {act.guild_achievement && (
-                      <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
-                        Guild earned "{act.guild_achievement.achievement.name}"
-                      </div>
-                    )}
+                     )}
                     <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-xs">
                       {new Date(act.timestamp).toLocaleDateString('fr-FR')}
                     </div>
