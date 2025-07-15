@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   UsersIcon,
   TrophyIcon,
@@ -28,56 +29,32 @@ const getClassColor = (className: string): string => {
   return classColors[className] || 'bg-gray-500'
 }
 
-export default async function Home(): Promise<React.JSX.Element> {
-  // Fetch data from our API route
-  const data = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'}/api/warcraft-logs`, {
-    next: { revalidate: 300 } // Revalidate every 5 minutes
-  })
-
-  debugger;
-
-  console.log(data);
-  
-  let guildInfo: GuildInfo
-  let members: Member[]
-  let logs: Log[]
-  
-  if (!data.ok) {
-    console.error('Failed to fetch guild data:', data.status, data.statusText)
-    // Use fallback data if API fails
-    const fallbackData = {
-      guildInfo: {
-        name: 'Nose Beers But No Gear',
-        realm: 'Area 52',
-        faction: 'Alliance',
-        created: '2012-09-25T00:00:00Z',
-        level: 25,
-        memberCount: 6,
-        description: 'A cheeky guild of mischief-makers focused on having fun while still clearing content.'
-      },
-      members: [
-        { name: 'Brewmaster', level: 90, class: 'Monk', rank: 'Guild Master', role: 'Tank' },
-        { name: 'MistyWhiskers', level: 90, class: 'Monk', rank: 'Officer', role: 'Healer' },
-        { name: 'PawsOfFury', level: 90, class: 'Monk', rank: 'Officer', role: 'DPS' },
-        { name: 'NoodleMaster', level: 90, class: 'Monk', rank: 'Chef', role: 'Feeder' },
-        { name: 'BambooChewer', level: 90, class: 'Druid', rank: 'Raider', role: 'Tank' },
-        { name: 'MistyMist', level: 90, class: 'Mage', rank: 'Raider', role: 'DPS' }
-      ],
-      logs: [
-        { id: 1, raid: "Mogu'shan Vaults", date: '2023-04-10', kills: 6, wipes: 2, bestPerformance: 95 },
-        { id: 2, raid: 'Heart of Fear', date: '2023-04-17', kills: 5, wipes: 4, bestPerformance: 88 },
-        { id: 3, raid: 'Terrace of Endless Spring', date: '2023-04-24', kills: 4, wipes: 3, bestPerformance: 92 }
-      ]
-    }
-    guildInfo = fallbackData.guildInfo
-    members = fallbackData.members
-    logs = fallbackData.logs
-  } else {
-    const responseData: { guildInfo: GuildInfo; members: Member[]; logs: Log[] } = await data.json()
-    guildInfo = responseData.guildInfo
-    members = responseData.members
-    logs = responseData.logs
+export default function Home(): React.JSX.Element {
+  // Use static data for now to avoid build-time fetch issues
+  const guildInfo: GuildInfo = {
+    name: 'Nose Beers But No Gear',
+    realm: 'Area 52',
+    faction: 'Alliance',
+    created: '2012-09-25T00:00:00Z',
+    level: 25,
+    memberCount: 6,
+    description: 'A cheeky guild of mischief-makers focused on having fun while still clearing content.'
   }
+  
+  const members: Member[] = [
+    { name: 'Brewmaster', level: 90, class: 'Monk', rank: 'Guild Master', role: 'Tank' },
+    { name: 'MistyWhiskers', level: 90, class: 'Monk', rank: 'Officer', role: 'Healer' },
+    { name: 'PawsOfFury', level: 90, class: 'Monk', rank: 'Officer', role: 'DPS' },
+    { name: 'NoodleMaster', level: 90, class: 'Monk', rank: 'Chef', role: 'Feeder' },
+    { name: 'BambooChewer', level: 90, class: 'Druid', rank: 'Raider', role: 'Tank' },
+    { name: 'MistyMist', level: 90, class: 'Mage', rank: 'Raider', role: 'DPS' }
+  ]
+  
+  const logs: Log[] = [
+    { id: 1, raid: "Mogu'shan Vaults", date: '2023-04-10', kills: 6, wipes: 2, bestPerformance: 95 },
+    { id: 2, raid: 'Heart of Fear', date: '2023-04-17', kills: 5, wipes: 4, bestPerformance: 88 },
+    { id: 3, raid: 'Terrace of Endless Spring', date: '2023-04-24', kills: 4, wipes: 3, bestPerformance: 92 }
+  ]
 
   return (
     <div className="w-full transition-colors duration-300">
@@ -276,9 +253,11 @@ export default async function Home(): Promise<React.JSX.Element> {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
               <div className="flex items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg border border-pandaria-primary/10 dark:border-pandaria-primary/30 hover:transform hover:scale-105 transition-transform">
-                <img
+                <Image
                   src="https://wow.zamimg.com/images/wow/icons/large/classicon_monk.jpg"
                   alt="Monk"
+                  width={40}
+                  height={40}
                   className="w-10 h-10 mr-3 rounded-md"
                 />
                 <div>
@@ -287,9 +266,11 @@ export default async function Home(): Promise<React.JSX.Element> {
                 </div>
               </div>
               <div className="flex items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg border border-pandaria-primary/10 dark:border-pandaria-primary/30 hover:transform hover:scale-105 transition-transform">
-                <img
+                <Image
                   src="https://wow.zamimg.com/images/wow/icons/large/classicon_priest.jpg"
                   alt="Priest"
+                  width={40}
+                  height={40}
                   className="w-10 h-10 mr-3 rounded-md"
                 />
                 <div>
@@ -298,9 +279,11 @@ export default async function Home(): Promise<React.JSX.Element> {
                 </div>
               </div>
               <div className="flex items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg border border-pandaria-primary/10 dark:border-pandaria-primary/30 hover:transform hover:scale-105 transition-transform">
-                <img
+                <Image
                   src="https://wow.zamimg.com/images/wow/icons/large/classicon_mage.jpg"
                   alt="Mage"
+                  width={40}
+                  height={40}
                   className="w-10 h-10 mr-3 rounded-md"
                 />
                 <div>

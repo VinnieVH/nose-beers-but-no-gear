@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import { CalendarIcon, UsersIcon, InfoIcon, StarIcon, ActivityIcon } from 'lucide-react'
 
 // Hardcoded data to replace hooks
@@ -33,17 +34,20 @@ const About = (): React.JSX.Element => {
 
       {/* Guild Banner */}
       <div className="relative rounded-lg overflow-hidden h-64 mb-12">
-        <img
+        <Image
           src="https://assetsio.gnwcdn.com/pandaria-character.jpg?width=1920&height=1920&fit=bounds&quality=70&format=jpg&auto=webp"
           alt="Guild Banner"
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-pandaria-dark to-transparent"></div>
         <div className="absolute bottom-0 left-0 p-6">
           <div className="flex items-center">
-            <img
+            <Image
               src="https://wow.zamimg.com/images/wow/icons/large/ui_allianceicon-round.jpg"
               alt="Guild Logo"
+              width={64}
+              height={64}
               className="w-16 h-16 rounded border-2 border-pandaria-accent mr-4"
             />
             <div>

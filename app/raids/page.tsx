@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 
 // Hardcoded data to replace hooks
 const logs = [
@@ -78,9 +79,11 @@ const Raids = (): React.JSX.Element => {
           <div className="space-y-4">
             {performances.map((perf, index) => (
               <div key={index} className="flex items-center">
-                <img
+                <Image
                   src={`https://wow.zamimg.com/images/wow/icons/large/classicon_${perf.class.toLowerCase().replace(' ', '')}.jpg`}
                   alt={perf.class}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 rounded border border-pandaria-secondary/50 dark:border-pandaria-accent/50 mr-4"
                 />
                 <div>
