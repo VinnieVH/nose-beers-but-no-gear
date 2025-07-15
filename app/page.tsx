@@ -29,32 +29,64 @@ const getClassColor = (className: string): string => {
   return classColors[className] || 'bg-gray-500'
 }
 
-export default function Home(): React.JSX.Element {
-  // Use static data for now to avoid build-time fetch issues
-  const guildInfo: GuildInfo = {
-    name: 'Nose Beers But No Gear',
-    realm: 'Area 52',
-    faction: 'Alliance',
-    created: '2012-09-25T00:00:00Z',
-    level: 25,
-    memberCount: 6,
-    description: 'A cheeky guild of mischief-makers focused on having fun while still clearing content.'
+export default async function Home(): Promise<React.JSX.Element> {
+  // Fetch data using Next.js recommended pattern
+  let guildInfo: GuildInfo
+  let members: Member[]
+  let logs: Log[]
+  
+  try {
+    // Try to fetch from your API route using absolute URL
+    console.log('Attempting to fetch guild data...')
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://nose-beers-but-no-gear.vercel.app'
+    const timestamp = Date.now() // Add timestamp to prevent caching
+    const data = await fetch(`${baseUrl}/api/warcraft-logs?t=${timestamp}`, {
+      cache: 'no-store' // Don't cache during build, always fetch fresh data
+    })
+    
+    console.log('Fetch response status:', data.status)
+    
+    if (data.ok) {
+      const responseData: { guildInfo: GuildInfo; members: Member[]; logs: Log[] } = await data.json()
+      console.log('Successfully fetched data:', {
+        guildName: responseData.guildInfo.name,
+        memberCount: responseData.members.length,
+        logCount: responseData.logs.length
+      })
+      guildInfo = responseData.guildInfo
+      members = responseData.members
+      logs = responseData.logs
+    } else {
+      throw new Error(`API request failed: ${data.status}`)
+    }
+  } catch (error) {
+    console.error('Using fallback data:', error)
+    // Use fallback data if API fails
+    guildInfo = {
+      name: 'Nose Beers But No Gear',
+      realm: 'Area 52',
+      faction: 'Alliance',
+      created: '2012-09-25T00:00:00Z',
+      level: 25,
+      memberCount: 6,
+      description: 'A cheeky guild of mischief-makers focused on having fun while still clearing content.'
+    }
+    
+    members = [
+      { name: 'Brewmaster', level: 90, class: 'Monk', rank: 'Guild Master', role: 'Tank' },
+      { name: 'MistyWhiskers', level: 90, class: 'Monk', rank: 'Officer', role: 'Healer' },
+      { name: 'PawsOfFury', level: 90, class: 'Monk', rank: 'Officer', role: 'DPS' },
+      { name: 'NoodleMaster', level: 90, class: 'Monk', rank: 'Chef', role: 'Feeder' },
+      { name: 'BambooChewer', level: 90, class: 'Druid', rank: 'Raider', role: 'Tank' },
+      { name: 'MistyMist', level: 90, class: 'Mage', rank: 'Raider', role: 'DPS' }
+    ]
+    
+    logs = [
+      { id: 1, raid: "Mogu'shan Vaults", date: '2023-04-10', kills: 6, wipes: 2, bestPerformance: 95 },
+      { id: 2, raid: 'Heart of Fear', date: '2023-04-17', kills: 5, wipes: 4, bestPerformance: 88 },
+      { id: 3, raid: 'Terrace of Endless Spring', date: '2023-04-24', kills: 4, wipes: 3, bestPerformance: 92 }
+    ]
   }
-  
-  const members: Member[] = [
-    { name: 'Brewmaster', level: 90, class: 'Monk', rank: 'Guild Master', role: 'Tank' },
-    { name: 'MistyWhiskers', level: 90, class: 'Monk', rank: 'Officer', role: 'Healer' },
-    { name: 'PawsOfFury', level: 90, class: 'Monk', rank: 'Officer', role: 'DPS' },
-    { name: 'NoodleMaster', level: 90, class: 'Monk', rank: 'Chef', role: 'Feeder' },
-    { name: 'BambooChewer', level: 90, class: 'Druid', rank: 'Raider', role: 'Tank' },
-    { name: 'MistyMist', level: 90, class: 'Mage', rank: 'Raider', role: 'DPS' }
-  ]
-  
-  const logs: Log[] = [
-    { id: 1, raid: "Mogu'shan Vaults", date: '2023-04-10', kills: 6, wipes: 2, bestPerformance: 95 },
-    { id: 2, raid: 'Heart of Fear', date: '2023-04-17', kills: 5, wipes: 4, bestPerformance: 88 },
-    { id: 3, raid: 'Terrace of Endless Spring', date: '2023-04-24', kills: 4, wipes: 3, bestPerformance: 92 }
-  ]
 
   return (
     <div className="w-full transition-colors duration-300">
