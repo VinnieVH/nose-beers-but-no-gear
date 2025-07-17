@@ -2,14 +2,14 @@ import React from 'react'
 import type { Member } from '../lib/types'
 import type { WowGuildMember } from '../shared/types'
 import RosterTable from '../components/RosterTable'
-import { getClassNameById, getRankName } from '../lib/utils'
+import { getBaseUrl, getClassNameById, getRankName } from '../lib/utils'
 
 export default async function Roster(): Promise<React.JSX.Element> {
   let members: Member[]
 
   try {
     // Fetch from Blizzard roster API
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'
+    const baseUrl = getBaseUrl()
     const data = await fetch(`${baseUrl}/api/blizzard/roster`, {
       cache: 'no-store'
     })

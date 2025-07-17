@@ -37,6 +37,26 @@ export const getClassBadgeColor = (className: string): string => {
   return badgeColors[className] || 'bg-gray-500/20 text-gray-500 border-gray-500/30'
 }
 
+export function getBaseUrl(): string {
+  // Check for Vercel deployment URL
+  if (process.env.VERCEL_URL) {
+    // Vercel URL might already include protocol, so handle both cases
+    const vercelUrl = process.env.VERCEL_URL
+    if (vercelUrl.startsWith('http')) {
+      return vercelUrl
+    }
+    return `https://${vercelUrl}`
+  }
+  
+  // Check for custom domain in production
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL
+  }
+  
+  // Fallback to localhost for development
+  return 'http://localhost:3001'
+}
+
 // Rank priority for sorting (higher number = higher priority)
 export const getRankPriority = (rank: string): number => {
   const rankPriorities: Record<string, number> = {

@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import type { GuildInfo, Member } from './lib/types'
 import type { WowGuildMember } from './shared/types'
-import { getClassColor, getClassNameById } from './lib/utils'
+import { getBaseUrl, getClassColor, getClassNameById } from './lib/utils'
 
 export default async function Home(): Promise<React.JSX.Element> {
   // Fetch data using Next.js recommended pattern
@@ -18,7 +18,7 @@ export default async function Home(): Promise<React.JSX.Element> {
 
   try {
     // Fetch from Blizzard roster API
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'
+    const baseUrl = getBaseUrl()
     const data = await fetch(`${baseUrl}/api/blizzard/roster`, {
       cache: 'no-store'
     })

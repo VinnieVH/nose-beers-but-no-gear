@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { CalendarIcon, UsersIcon, InfoIcon, StarIcon, ActivityIcon } from 'lucide-react'
 import type { WowGuild, WowGuildRoster, WowGuildAchievements, WowGuildActivities } from '@/app/shared/types'
 import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '@/app/config/guild'
+import { getBaseUrl } from '../lib/utils'
 
 interface GuildData {
   guild: WowGuild | null
@@ -20,7 +21,7 @@ async function getGuildData(): Promise<GuildData> {
     })
 
     // Use absolute URL for server-side requests
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://nose-beers-but-no-gear.vercel.app'
+    const baseUrl = getBaseUrl()
     
     const response = await fetch(`${baseUrl}/api/blizzard?${params.toString()}`, {
       next: { revalidate: 3600 } // cache for 1 hour

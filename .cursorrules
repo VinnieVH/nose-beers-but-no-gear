@@ -111,6 +111,14 @@
    - Use default exports for React components
    - Export types and interfaces that are reused
 
+3. **Utility Functions Organization:**
+   - **NEVER duplicate utility functions across components**
+   - Place shared utility functions in `app/lib/utils.ts`
+   - Import utilities from shared location: `import { getClassColor, getRankPriority } from '../lib/utils'`
+   - Examples of utilities to share: class color mappings, rank priorities, ID-to-name mappings
+   - If a function is used in 2+ places, it belongs in shared utilities
+   - Follow DRY principle - single source of truth for common logic
+
 ### Performance Rules
 1. **Minimize re-renders through proper memoization**
    - Use React.memo for pure components
