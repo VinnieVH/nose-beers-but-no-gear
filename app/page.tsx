@@ -7,46 +7,45 @@ import {
   BeerIcon,
   HeartIcon,
 } from 'lucide-react'
-import type { GuildInfo, Member, Log } from './lib/types'
-
-// Utility function for class colors
-const getClassColor = (className: string): string => {
-  const classColors: Record<string, string> = {
-    'Warrior': 'bg-class-warrior',
-    'Paladin': 'bg-class-paladin',
-    'Hunter': 'bg-class-hunter',
-    'Rogue': 'bg-class-rogue',
-    'Priest': 'bg-class-priest',
-    'Death Knight': 'bg-class-death-knight',
-    'Shaman': 'bg-class-shaman',
-    'Mage': 'bg-class-mage',
-    'Warlock': 'bg-class-warlock',
-    'Monk': 'bg-class-monk',
-    'Druid': 'bg-class-druid',
-    'Demon Hunter': 'bg-class-demon-hunter',
-    'Evoker': 'bg-class-evoker'
-  }
-  return classColors[className] || 'bg-gray-500'
-}
+import type { GuildInfo, Member } from './lib/types'
+import type { WowGuildMember } from './shared/types'
+import { getClassColor, getClassNameById } from './lib/utils'
 
 export default async function Home(): Promise<React.JSX.Element> {
   // Fetch data using Next.js recommended pattern
   let guildInfo: GuildInfo
   let members: Member[]
-  let logs: Log[]
-  
+
   try {
-    // Try to fetch from your API route using absolute URL
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://nose-beers-but-no-gear.vercel.app'
-    const timestamp = Date.now() // Add timestamp to prevent caching
-    const data = await fetch(`${baseUrl}/api/warcraft-logs?t=${timestamp}`, {
-      cache: 'no-store' // Don't cache during build, always fetch fresh data
-    })    
+    // Fetch from Blizzard roster API
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'
+    const data = await fetch(`${baseUrl}/api/blizzard/roster`, {
+      cache: 'no-store'
+    })
     if (data.ok) {
-      const responseData: { guildInfo: GuildInfo; members: Member[]; logs: Log[] } = await data.json()
-      guildInfo = responseData.guildInfo
-      members = responseData.members
-      logs = responseData.logs
+      const responseData = await data.json()
+      console.log(responseData)
+      // Map Blizzard API response to GuildInfo and Member[]
+      guildInfo = {
+        name: responseData.guild.name,
+        realm: responseData.guild.realm.name,
+        faction: responseData.guild.faction.name,
+        created: responseData.guild.created_timestamp
+          ? new Date(responseData.guild.created_timestamp).toISOString()
+          : '',
+        level: 0, // Not available in Blizzard API
+        memberCount: responseData.members.length,
+        description: '' // Not available in Blizzard API
+      }
+      members = responseData.members.map((m: WowGuildMember) => ({
+        name: m.character.name,
+        level: m.character.level,
+        class: getClassNameById(m.character.playable_class.id),
+        rank: m.rank.toString(),
+        role: '' // Not available in Blizzard API
+      }))
+
+      console.log(guildInfo)
     } else {
       throw new Error(`API request failed: ${data.status}`)
     }
@@ -62,7 +61,6 @@ export default async function Home(): Promise<React.JSX.Element> {
       memberCount: 6,
       description: 'A cheeky guild of mischief-makers focused on having fun while still clearing content.'
     }
-    
     members = [
       { name: 'Brewmaster', level: 90, class: 'Monk', rank: 'Guild Master', role: 'Tank' },
       { name: 'MistyWhiskers', level: 90, class: 'Monk', rank: 'Officer', role: 'Healer' },
@@ -70,12 +68,6 @@ export default async function Home(): Promise<React.JSX.Element> {
       { name: 'NoodleMaster', level: 90, class: 'Monk', rank: 'Chef', role: 'Feeder' },
       { name: 'BambooChewer', level: 90, class: 'Druid', rank: 'Raider', role: 'Tank' },
       { name: 'MistyMist', level: 90, class: 'Mage', rank: 'Raider', role: 'DPS' }
-    ]
-    
-    logs = [
-      { id: 1, raid: "Mogu'shan Vaults", date: '2023-04-10', kills: 6, wipes: 2, bestPerformance: 95 },
-      { id: 2, raid: 'Heart of Fear', date: '2023-04-17', kills: 5, wipes: 4, bestPerformance: 88 },
-      { id: 3, raid: 'Terrace of Endless Spring', date: '2023-04-24', kills: 4, wipes: 3, bestPerformance: 92 }
     ]
   }
 
@@ -224,29 +216,7 @@ export default async function Home(): Promise<React.JSX.Element> {
               </h2>
             </div>
             <ul className="space-y-3">
-              {logs.slice(0, 3).map((log, index) => (
-                <li
-                  key={index}
-                  className="border-b border-pandaria-primary/10 pb-2 last:border-0 last:pb-0"
-                >
-                  <div className="flex justify-between items-center">
-                    <span className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                      {log.raid}
-                    </span>
-                    <span className="text-pandaria-primary dark:text-pandaria-primaryLight text-sm">
-                      {new Date(log.date).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="mt-1 flex items-center text-sm">
-                    <span className="text-pandaria-primaryDark dark:text-pandaria-primaryLight mr-4 font-medium">
-                      {log.kills} Bosses Pranked
-                    </span>
-                    <span className="text-pandaria-secondary dark:text-pandaria-secondaryLight">
-                      {log.wipes} Oopsies
-                    </span>
-                  </div>
-                </li>
-              ))}
+              {/* Logs data removed as per new_code */}
             </ul>
             <Link
               href="/raids"

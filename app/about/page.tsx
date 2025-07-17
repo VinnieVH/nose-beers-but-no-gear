@@ -269,7 +269,7 @@ const About = async (): Promise<React.JSX.Element> => {
                        )}
                        {act.guild_achievement && (
                          <div className="text-pandaria-dark dark:text-pandaria-light font-medium text-sm">
-                           Guild earned &ldquo;{act.guild_achievement.achievement.name}&rdquo;
+                           Guild earned &ldquo;{act.guild_achievement.achievement.achievement.name}&rdquo;
                           </div>
                        )}
                       <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-xs">

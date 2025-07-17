@@ -31,22 +31,21 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const realmSlug = getRealmSlug(realmName)
     const guildSlug = getGuildSlug(guildName)
 
-    const guildData = await wowApi.fetchAllGuildData(realmSlug, guildSlug, region)
+    const achievementsData = await wowApi.fetchGuildAchievements(realmSlug, guildSlug, region)
 
-    return NextResponse.json({
-      ...guildData,
-      _links: {
-        guild: `/api/blizzard/guild?guild=${guildName}&realm=${realmName}&region=${region}`,
-        roster: `/api/blizzard/roster?guild=${guildName}&realm=${realmName}&region=${region}`,
-        achievements: `/api/blizzard/achievements?guild=${guildName}&realm=${realmName}&region=${region}`,
-        activity: `/api/blizzard/activity?guild=${guildName}&realm=${realmName}&region=${region}`
-      }
-    })
+    if (!achievementsData) {
+      return NextResponse.json(
+        { error: 'Failed to fetch achievements data' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json(achievementsData)
   } catch (error) {
-    console.error('Error fetching guild data:', error)
+    console.error('Error fetching achievements data:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch guild data' },
+      { error: 'Failed to fetch achievements data' },
       { status: 500 }
     )
   }
-}
+} 

@@ -73,12 +73,41 @@ export interface GraphQLVariables {
 // WoW API Types
 // ============================================================================
 
+export interface WowLinks {
+  self: {
+    href: string
+  }
+}
+
+export interface WowKey {
+  href: string
+}
+
 export interface WowRealm {
-  id: number
+  key: WowKey
   name: string
+  id: number
   slug: string
-  locale: string
-  timezone: string
+}
+
+export interface WowRealmLocalized {
+  key: WowKey
+  name: {
+    en_US: string
+    es_MX: string
+    pt_BR: string
+    de_DE: string
+    en_GB: string
+    es_ES: string
+    fr_FR: string
+    it_IT: string
+    ru_RU: string
+    ko_KR: string
+    zh_TW: string
+    zh_CN: string
+  }
+  id: number
+  slug: string
 }
 
 export interface WowFaction {
@@ -86,14 +115,81 @@ export interface WowFaction {
   name: string
 }
 
+export interface WowFactionLocalized {
+  type: 'HORDE' | 'ALLIANCE'
+  name: {
+    en_US: string
+    es_MX: string
+    pt_BR: string
+    de_DE: string
+    en_GB: string
+    es_ES: string
+    fr_FR: string
+    it_IT: string
+    ru_RU: string
+    ko_KR: string
+    zh_TW: string
+    zh_CN: string
+  }
+}
+
 export interface WowPlayableClass {
+  key: WowKey
   id: number
-  name: string
 }
 
 export interface WowPlayableRace {
+  key: WowKey
   id: number
-  name: string
+}
+
+export interface WowCrestColor {
+  id: number
+  rgba: {
+    r: number
+    g: number
+    b: number
+    a: number
+  }
+}
+
+export interface WowCrestMedia {
+  key: WowKey
+  id: number
+}
+
+export interface WowCrestEmblem {
+  id: number
+  media: WowCrestMedia
+  color: WowCrestColor
+}
+
+export interface WowCrestBorder {
+  id: number
+  media: WowCrestMedia
+  color: WowCrestColor
+}
+
+export interface WowCrestBackground {
+  color: WowCrestColor
+}
+
+export interface WowCrest {
+  emblem: WowCrestEmblem
+  border: WowCrestBorder
+  background: WowCrestBackground
+}
+
+export interface WowGuildLinks {
+  roster: {
+    href: string
+  }
+  achievements: {
+    href: string
+  }
+  activity: {
+    href: string
+  }
 }
 
 export interface WowGuild {
@@ -103,70 +199,127 @@ export interface WowGuild {
   achievement_points: number
   member_count: number
   realm: WowRealm
+  crest: WowCrest
   created_timestamp: number
+  name_search: string
+}
+
+export interface WowGuildReference {
+  key: WowKey
+  name: string
+  id: number
+  realm: WowRealm
+  faction: WowFaction
+}
+
+export interface WowGuildReferenceLocalized {
+  key: WowKey
+  name: string
+  id: number
+  realm: WowRealmLocalized
+  faction: WowFactionLocalized
+}
+
+export interface WowCharacter {
+  key: WowKey
+  name: string
+  id: number
+  realm: WowRealm
+  level: number
+  playable_class: WowPlayableClass
+  playable_race: WowPlayableRace
+  faction: {
+    type: 'HORDE' | 'ALLIANCE'
+  }
 }
 
 export interface WowGuildMember {
-  character: {
-    name: string
-    id: number
-    realm: WowRealm
-    level: number
-    playable_class: WowPlayableClass
-    playable_race: WowPlayableRace
-  }
+  character: WowCharacter
   rank: number
 }
 
 export interface WowGuildRoster {
-  guild: WowGuild
+  guild: WowGuildReference
   members: WowGuildMember[]
 }
 
 export interface WowAchievement {
-  id: number
+  key: WowKey
   name: string
-  description: string
-  points: number
-  is_account_wide: boolean
-  criteria: {
-    description: string
-    amount: number
+  id: number
+}
+
+export interface WowAchievementLocalized {
+  key: WowKey
+  name: {
+    en_US: string
+    es_MX: string
+    pt_BR: string
+    de_DE: string
+    en_GB: string
+    es_ES: string
+    fr_FR: string
+    it_IT: string
+    ru_RU: string
+    ko_KR: string
+    zh_TW: string
+    zh_CN: string
   }
-  media: {
-    id: number
-  }
+  id: number
+}
+
+export interface WowAchievementCriteria {
+  id: number
+  is_completed: boolean
+  child_criteria?: WowAchievementCriteria[]
+  amount?: number
 }
 
 export interface WowGuildAchievement {
+  id: number
   achievement: WowAchievement
-  timestamp: number
+  criteria: WowAchievementCriteria
+  completed_timestamp?: number
 }
 
 export interface WowGuildAchievements {
-  guild: WowGuild
+  guild: WowGuildReference
   total_quantity: number
   total_points: number
   achievements: WowGuildAchievement[]
-  recent_events: WowGuildAchievement[]
+  category_progress: Array<{
+    category: {
+      key: WowKey
+      name: string
+      id: number
+    }
+    quantity: number
+    points: number
+  }>
+  recent_events: Array<{
+    achievement: WowAchievement
+    timestamp: number
+  }>
 }
 
 export interface WowGuildActivityType {
-  type: 'ENCOUNTER_VICTORY' | 'PLAYER_ACHIEVEMENT' | 'GUILD_ACHIEVEMENT'
-  name: string
+  type: 'CHARACTER_ACHIEVEMENT' | 'GUILD_ACHIEVEMENT' | 'ENCOUNTER_VICTORY'
+}
+
+export interface WowCharacterAchievement {
+  character: {
+    key: WowKey
+    name: string
+    id: number
+    realm: WowRealmLocalized
+  }
+  achievement: WowAchievement
 }
 
 export interface WowGuildActivity {
-  character_achievement?: {
-    character: {
-      name: string
-      id: number
-      realm: WowRealm
-    }
-    achievement: WowAchievement
-  }
+  character_achievement?: WowCharacterAchievement
   guild_achievement?: {
-    achievement: WowAchievement
+    achievement: WowGuildAchievement
   }
   encounter_completed?: {
     encounter: {
@@ -183,7 +336,7 @@ export interface WowGuildActivity {
 }
 
 export interface WowGuildActivities {
-  guild: WowGuild
+  guild: WowGuildReferenceLocalized
   activities: WowGuildActivity[]
 }
 
