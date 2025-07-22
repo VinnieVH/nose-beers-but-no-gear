@@ -1,5 +1,5 @@
 import React from 'react'
-import Link from 'next/link'
+import NavLinks from './NavLinks'
 
 const Footer = (): React.JSX.Element => {
   return (
@@ -15,32 +15,7 @@ const Footer = (): React.JSX.Element => {
             </p>
           </div>
           <div className="flex flex-col md:flex-row md:space-x-8 text-sm">
-            <Link
-              href="/roster"
-              className="text-pandaria-dark dark:text-pandaria-light hover:text-pandaria-secondary dark:hover:text-pandaria-accent mb-2 md:mb-0 font-medium"
-            >
-              Our Silly Roster
-            </Link>
-            <Link
-              href="/raids"
-              className="text-pandaria-dark dark:text-pandaria-light hover:text-pandaria-secondary dark:hover:text-pandaria-accent mb-2 md:mb-0 font-medium"
-            >
-              Raid Shenanigans
-            </Link>
-            <Link
-              href="/about"
-              className="text-pandaria-dark dark:text-pandaria-light hover:text-pandaria-secondary dark:hover:text-pandaria-accent mb-2 md:mb-0 font-medium"
-            >
-              About Our Pranks
-            </Link>
-            <a
-              href="https://discord.gg/FWCgRQmpxk"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-pandaria-dark dark:text-pandaria-light hover:text-pandaria-secondary dark:hover:text-pandaria-accent font-medium"
-            >
-              Join Our Circus
-            </a>
+            <NavLinks orientation="horizontal" includeDiscord />
           </div>
         </div>
         <div className="mt-6 pt-4 border-t border-pandaria-primary/20 text-center text-pandaria-dark dark:text-pandaria-light/80 text-xs">

@@ -90,3 +90,55 @@ export const getRankName = (rank: number): string => {
   }
   return rankMap[rank] || 'Member'
 } 
+
+/**
+ * Format a date string or number to a locale date string.
+ * @param date - Date string or timestamp
+ * @param locale - Optional locale string (default 'en-US')
+ * @returns Formatted date string
+ */
+export const formatDate = (date: string | number, locale: string = 'en-US'): string => {
+  if (!date) return '';
+  const d = typeof date === 'string' ? new Date(date) : new Date(date);
+  return d.toLocaleDateString(locale);
+};
+
+/**
+ * Format a timestamp (seconds or ms) to a locale date+time string.
+ * @param timestamp - Unix timestamp (seconds or ms) or ISO string
+ * @param locale - Optional locale string (default 'en-US')
+ * @returns Formatted date+time string
+ */
+export const formatDateTime = (timestamp: number | string, locale: string = 'en-US'): string => {
+  if (!timestamp) return '';
+  let d: Date;
+  if (typeof timestamp === 'number') {
+    // If it's in seconds, convert to ms
+    d = new Date(timestamp > 1e12 ? timestamp : timestamp * 1000);
+  } else {
+    d = new Date(timestamp);
+  }
+  return d.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' });
+};
+
+/**
+ * Get a color class for performance/quality percentage.
+ * @param percentage - Performance percentage
+ * @returns Tailwind color class
+ */
+export const getPerformanceColor = (percentage: number): string => {
+  if (percentage >= 95) return 'text-quality-epic';
+  if (percentage >= 90) return 'text-quality-rare';
+  if (percentage >= 80) return 'text-quality-uncommon';
+  return 'text-quality-common';
+};
+
+/**
+ * Get a CSS color accent for raid event cards.
+ * @param color - Optional color string (e.g., '76,175,80')
+ * @returns CSS rgba string
+ */
+export const getColorAccent = (color?: string): string => {
+  if (!color) return 'rgba(76,175,80,0.5)';
+  return `rgba(${color},0.5)`;
+}; 

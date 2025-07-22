@@ -5,6 +5,7 @@ import { DISCORD_INVITE_URL } from './config/guild'
 import type { GuildInfo, Member } from './lib/types'
 import type { WowGuildMember } from './shared/types'
 import { getBaseUrl, getClassColor, getClassNameById } from './lib/utils'
+import { WowClass, MemberRole, WowFaction } from './shared/enums'
 
 export default async function Home(): Promise<React.JSX.Element> {
   // Fetch data using Next.js recommended pattern
@@ -48,19 +49,19 @@ export default async function Home(): Promise<React.JSX.Element> {
     guildInfo = {
       name: 'Nose Beers But No Gear',
       realm: 'Area 52',
-      faction: 'Alliance',
+      faction: WowFaction.Alliance,
       created: '2012-09-25T00:00:00Z',
       level: 25,
       memberCount: 6,
       description: 'A cheeky guild of mischief-makers focused on having fun while still clearing content.'
     }
     members = [
-      { name: 'Brewmaster', level: 90, class: 'Monk', rank: 'Guild Master', role: 'Tank' },
-      { name: 'MistyWhiskers', level: 90, class: 'Monk', rank: 'Officer', role: 'Healer' },
-      { name: 'PawsOfFury', level: 90, class: 'Monk', rank: 'Officer', role: 'DPS' },
-      { name: 'NoodleMaster', level: 90, class: 'Monk', rank: 'Chef', role: 'Feeder' },
-      { name: 'BambooChewer', level: 90, class: 'Druid', rank: 'Raider', role: 'Tank' },
-      { name: 'MistyMist', level: 90, class: 'Mage', rank: 'Raider', role: 'DPS' }
+      { name: 'Brewmaster', level: 90, class: WowClass.Monk, rank: 'Guild Master', role: MemberRole.Tank },
+      { name: 'MistyWhiskers', level: 90, class: WowClass.Monk, rank: 'Officer', role: MemberRole.Healer },
+      { name: 'PawsOfFury', level: 90, class: WowClass.Monk, rank: 'Officer', role: MemberRole.DPS },
+      { name: 'NoodleMaster', level: 90, class: WowClass.Monk, rank: 'Chef', role: MemberRole.Feeder },
+      { name: 'BambooChewer', level: 90, class: WowClass.Druid, rank: 'Raider', role: MemberRole.Tank },
+      { name: 'MistyMist', level: 90, class: WowClass.Mage, rank: 'Raider', role: MemberRole.DPS }
     ]
   }
 

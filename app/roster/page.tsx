@@ -3,6 +3,7 @@ import type { Member } from '../lib/types'
 import type { WowGuildMember } from '../shared/types'
 import RosterTable from '../components/RosterTable'
 import { getBaseUrl, getClassNameById, getRankName } from '../lib/utils'
+import { WowClass, MemberRole } from '../shared/enums'
 
 export default async function Roster(): Promise<React.JSX.Element> {
   let members: Member[]
@@ -31,17 +32,17 @@ export default async function Roster(): Promise<React.JSX.Element> {
     console.error('Using fallback data:', error)
     // Use fallback data if API fails
     members = [
-      { name: 'Axecleaver', level: 60, class: 'Warrior', role: 'Tank', rank: 'Guild Master' },
-      { name: 'Lightbringer', level: 60, class: 'Paladin', role: 'Healer', rank: 'Raid Leader' },
-      { name: 'Firemage', level: 60, class: 'Mage', role: 'DPS', rank: 'Officer' },
-      { name: 'Shadowpriest', level: 60, class: 'Priest', role: 'Healer', rank: 'Member' },
-      { name: 'Stealthrogue', level: 60, class: 'Rogue', role: 'DPS', rank: 'Member' },
-      { name: 'Beerpanda', level: 60, class: 'Monk', role: 'Feeder', rank: 'Member' },
-      { name: 'Naturedruid', level: 60, class: 'Druid', role: 'DPS', rank: 'Member' },
-      { name: 'Deathknight', level: 60, class: 'Death Knight', role: 'Tank', rank: 'Member' },
-      { name: 'Huntmaster', level: 60, class: 'Hunter', role: 'DPS', rank: 'Member' },
-      { name: 'Shamanic', level: 60, class: 'Shaman', role: 'Healer', rank: 'Member' },
-      { name: 'Warlocky', level: 60, class: 'Warlock', role: 'DPS', rank: 'Member' }
+      { name: 'Axecleaver', level: 60, class: WowClass.Warrior, role: MemberRole.Tank, rank: 'Guild Master' },
+      { name: 'Lightbringer', level: 60, class: WowClass.Paladin, role: MemberRole.Healer, rank: 'Raid Leader' },
+      { name: 'Firemage', level: 60, class: WowClass.Mage, role: MemberRole.DPS, rank: 'Officer' },
+      { name: 'Shadowpriest', level: 60, class: WowClass.Priest, role: MemberRole.Healer, rank: 'Member' },
+      { name: 'Stealthrogue', level: 60, class: WowClass.Rogue, role: MemberRole.DPS, rank: 'Member' },
+      { name: 'Beerpanda', level: 60, class: WowClass.Monk, role: MemberRole.Feeder, rank: 'Member' },
+      { name: 'Naturedruid', level: 60, class: WowClass.Druid, role: MemberRole.DPS, rank: 'Member' },
+      { name: 'Deathknight', level: 60, class: WowClass.DeathKnight, role: MemberRole.Tank, rank: 'Member' },
+      { name: 'Huntmaster', level: 60, class: WowClass.Hunter, role: MemberRole.DPS, rank: 'Member' },
+      { name: 'Shamanic', level: 60, class: WowClass.Shaman, role: MemberRole.Healer, rank: 'Member' },
+      { name: 'Warlocky', level: 60, class: WowClass.Warlock, role: MemberRole.DPS, rank: 'Member' }
     ]
   }
 

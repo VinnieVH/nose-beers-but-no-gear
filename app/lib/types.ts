@@ -98,6 +98,11 @@ export interface RaidHelperEvent {
   startTime: number;
   endTime: number;
   channelId: string;
+  imageUrl?: string;
+  title?: string;
+  leaderName?: string;
+  signUpCount?: string | number;
+  color?: string;
   signUps?: unknown[]; // To be refined if sign-up structure is known
   [key: string]: unknown; // Allow extra fields for forward compatibility
 }

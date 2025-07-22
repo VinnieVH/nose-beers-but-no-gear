@@ -4,6 +4,7 @@ import React from 'react'
 import { SearchIcon, FilterIcon } from 'lucide-react'
 import type { Member } from '../lib/types'
 import { getClassColor, getClassBadgeColor, getRankPriority } from '../lib/utils'
+import StatsCard from './StatsCard'
 
 interface RosterTableProps {
   members: Member[]
@@ -166,38 +167,10 @@ const RosterTable = ({ members }: RosterTableProps): React.JSX.Element => {
 
       {/* Roster Stats */}
       <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-pandaria-dark rounded-lg p-4 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
-          <div className="text-2xl font-bold text-pandaria-secondary dark:text-pandaria-accent">
-            {members.length}
-          </div>
-          <div className="text-sm text-pandaria-dark/70 dark:text-pandaria-light/70">
-            Total Members
-          </div>
-        </div>
-        <div className="bg-white dark:bg-pandaria-dark rounded-lg p-4 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
-          <div className="text-2xl font-bold text-pandaria-secondary dark:text-pandaria-accent">
-            {members.filter(m => m.role === 'Tank').length}
-          </div>
-          <div className="text-sm text-pandaria-dark/70 dark:text-pandaria-light/70">
-            Tanks
-          </div>
-        </div>
-        <div className="bg-white dark:bg-pandaria-dark rounded-lg p-4 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
-          <div className="text-2xl font-bold text-pandaria-secondary dark:text-pandaria-accent">
-            {members.filter(m => m.role === 'Healer').length}
-          </div>
-          <div className="text-sm text-pandaria-dark/70 dark:text-pandaria-light/70">
-            Healers
-          </div>
-        </div>
-        <div className="bg-white dark:bg-pandaria-dark rounded-lg p-4 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
-          <div className="text-2xl font-bold text-pandaria-secondary dark:text-pandaria-accent">
-            {members.filter(m => m.role === 'DPS').length}
-          </div>
-          <div className="text-sm text-pandaria-dark/70 dark:text-pandaria-light/70">
-            DPS
-          </div>
-        </div>
+        <StatsCard value={members.length} label="Total Members" />
+        <StatsCard value={members.filter(m => m.role === 'Tank').length} label="Tanks" />
+        <StatsCard value={members.filter(m => m.role === 'Healer').length} label="Healers" />
+        <StatsCard value={members.filter(m => m.role === 'DPS').length} label="DPS" />
       </div>
     </>
   )

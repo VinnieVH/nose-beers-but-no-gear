@@ -2,24 +2,11 @@ import React from 'react';
 import type { RaidHelperEvent } from '../lib/types';
 import { CalendarIcon, UserIcon, UsersIcon } from 'lucide-react';
 import Image from 'next/image';
+import { formatDateTime, getColorAccent } from '../lib/utils'
 
 export interface RaidEventCardProps {
   event: RaidHelperEvent;
 }
-
-const formatDateTime = (timestamp?: number): string => {
-  if (!timestamp) return '';
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleString('nl-BE', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
-};
-
-const getColorAccent = (color?: string): string => {
-  if (!color) return 'rgba(76,175,80,0.5)';
-  return `rgba(${color},0.5)`;
-};
 
 const RaidEventCard = ({ event }: RaidEventCardProps): React.JSX.Element => {
   const imageUrl = typeof event.imageUrl === 'string' ? event.imageUrl : undefined;
@@ -30,30 +17,30 @@ const RaidEventCard = ({ event }: RaidEventCardProps): React.JSX.Element => {
 
   return (
     <div
-      className="raid-event-card flex flex-col md:flex-row md:items-center md:justify-between gap-4 rounded-xl border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-md p-0 overflow-hidden bg-pandaria-paper dark:bg-pandaria-primary/10 transition-colors duration-300 hover:shadow-lg"
-      style={{ borderLeft: `8px solid ${getColorAccent(color)}` }}
+      className="raid-event-card flex flex-col md:flex-row md:items-center gap-3 rounded-lg border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-sm p-0 overflow-hidden bg-pandaria-paper dark:bg-pandaria-primary/10 transition-colors duration-300 hover:shadow-md"
+      style={{ borderLeft: `4px solid ${getColorAccent(color)}` }}
     >
       {imageUrl && (
-        <div className="flex-shrink-0 w-full md:w-40 h-32 md:h-32 relative">
+        <div className="flex-shrink-0 w-full md:w-24 h-20 md:h-20 relative">
           <Image
             src={imageUrl}
             alt={title}
             fill
-            className="object-cover w-full h-full rounded-t-xl md:rounded-t-none md:rounded-l-xl"
-            style={{ minWidth: '100px', maxHeight: '128px' }}
-            sizes="160px"
+            className="object-cover w-full h-full rounded-t-lg md:rounded-t-none md:rounded-l-lg"
+            style={{ minWidth: '96px', maxHeight: '80px' }}
+            sizes="96px"
           />
         </div>
       )}
-      <div className="flex-1 p-5 flex flex-col gap-2">
+      <div className="flex-1 p-3 flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <CalendarIcon className="h-6 w-6 text-pandaria-secondary dark:text-pandaria-accent" />
-          <span className="text-lg font-bold text-pandaria-secondary dark:text-pandaria-accent">
+          <CalendarIcon className="h-4 w-4 text-pandaria-secondary dark:text-pandaria-accent" />
+          <span className="text-sm font-semibold text-pandaria-secondary dark:text-pandaria-accent">
             {title}
           </span>
         </div>
         {event.description && typeof event.description === 'string' && event.description.trim() !== '' && (
-          <div className="text-pandaria-dark/80 dark:text-pandaria-light/80 text-sm mb-1">
+          <div className="text-pandaria-dark/80 dark:text-pandaria-light/80 text-xs">
             {event.description}
           </div>
         )}
@@ -61,7 +48,7 @@ const RaidEventCard = ({ event }: RaidEventCardProps): React.JSX.Element => {
           {formatDateTime(event.startTime)}
           {event.endTime ? ` - ${formatDateTime(event.endTime)}` : ''}
         </div>
-        <div className="flex flex-wrap gap-4 mt-2 text-xs">
+        <div className="flex flex-wrap gap-3 mt-1 text-xs">
           {leaderName && (
             <span className="flex items-center gap-1 text-pandaria-primary dark:text-pandaria-primaryLight">
               <UserIcon className="h-4 w-4" /> Leader: {leaderName}

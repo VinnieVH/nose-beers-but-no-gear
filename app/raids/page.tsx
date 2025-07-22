@@ -1,5 +1,9 @@
 import React from 'react'
 import Image from 'next/image'
+import { formatDate, getPerformanceColor, getBaseUrl } from '../lib/utils'
+import { WowClass } from '../shared/enums'
+import type { RaidHelperEvent, RaidHelperEventsResponse } from '../lib/types'
+import RaidEventCard from '../components/RaidEventCard'
 
 // Hardcoded data to replace hooks
 const logs = [
@@ -11,11 +15,11 @@ const logs = [
 ]
 
 const performances = [
-  { name: 'Axecleaver', class: 'Warrior', raid: 'Ragnaros', percentage: 99 },
-  { name: 'Lightbringer', class: 'Paladin', raid: 'Nefarian', percentage: 97 },
-  { name: 'Firemage', class: 'Mage', raid: 'C\'Thun', percentage: 95 },
-  { name: 'Shadowpriest', class: 'Priest', raid: 'Ragnaros', percentage: 94 },
-  { name: 'Stealthrogue', class: 'Rogue', raid: 'Nefarian', percentage: 93 }
+  { name: 'Axecleaver', class: WowClass.Warrior, raid: 'Ragnaros', percentage: 99 },
+  { name: 'Lightbringer', class: WowClass.Paladin, raid: 'Nefarian', percentage: 97 },
+  { name: 'Firemage', class: WowClass.Mage, raid: 'C\'Thun', percentage: 95 },
+  { name: 'Shadowpriest', class: WowClass.Priest, raid: 'Ragnaros', percentage: 94 },
+  { name: 'Stealthrogue', class: WowClass.Rogue, raid: 'Nefarian', percentage: 93 }
 ]
 
 const raidProgress = [
@@ -26,15 +30,34 @@ const raidProgress = [
   { name: 'Siege of Orgrimmar', progress: 8, total: 14, percentage: 57.1, color: 'pandaria-secondary' }
 ]
 
-// Utility function for performance colors
-const getPerformanceColor = (percentage: number): string => {
-  if (percentage >= 95) return 'text-quality-epic'
-  if (percentage >= 90) return 'text-quality-rare'
-  if (percentage >= 80) return 'text-quality-uncommon'
-  return 'text-quality-common'
+async function getRaidHelperEvents(): Promise<RaidHelperEvent[]> {
+  try {
+    const baseUrl = getBaseUrl();
+    const response = await fetch(`${baseUrl}/api/raid-helper`, {
+      next: { revalidate: 300 }, // cache for 5 minutes
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch raid events');
+    }
+    const data: RaidHelperEventsResponse = await response.json();
+    return data.postedEvents || [];
+  } catch (error) {
+    console.error('Error fetching raid-helper events:', error);
+    return [];
+  }
 }
 
-const Raids = (): React.JSX.Element => {
+const Raids = async (): Promise<React.JSX.Element> => {
+  const raidEvents = await getRaidHelperEvents();
+
+  // Sort raid events by start time (earliest first)
+  const sortedRaidEvents = raidEvents.sort((a, b) => {
+    const dateA = new Date(a.startTime).getTime();
+    const dateB = new Date(b.startTime).getTime();
+    return dateA - dateB;
+  });
+
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-8">
@@ -141,7 +164,7 @@ const Raids = (): React.JSX.Element => {
                       {log.raid}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
-                      {new Date(log.date).toLocaleDateString()}
+                      {formatDate(log.date)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
                       {log.kills}
@@ -199,34 +222,23 @@ const Raids = (): React.JSX.Element => {
       </div>
 
       {/* Upcoming Raids */}
-      <div className="bg-pandaria-paper dark:bg-pandaria-dark/40 rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
+      <div className="bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
         <h2 className="text-2xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-6">
           Upcoming Raids
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-pandaria-dark rounded-lg p-4 border border-pandaria-primary/20 dark:border-pandaria-primary/30">
-            <h3 className="text-lg font-semibold text-pandaria-primary dark:text-pandaria-primaryLight mb-2">
-              Tuesday - Progression Night
-            </h3>
-            <p className="text-pandaria-dark dark:text-pandaria-light mb-2">
-              Focus: Throne of Thunder (10/13)
-            </p>
-            <p className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-sm">
-              8:00 PM - 11:00 PM EST
+        {sortedRaidEvents.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-lg">
+              No upcoming events found.
             </p>
           </div>
-          <div className="bg-white dark:bg-pandaria-dark rounded-lg p-4 border border-pandaria-primary/20 dark:border-pandaria-primary/30">
-            <h3 className="text-lg font-semibold text-pandaria-primary dark:text-pandaria-primaryLight mb-2">
-              Thursday - Progression Night
-            </h3>
-            <p className="text-pandaria-dark dark:text-pandaria-light mb-2">
-              Focus: Siege of Orgrimmar (8/14)
-            </p>
-            <p className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-sm">
-              8:00 PM - 11:00 PM EST
-            </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {sortedRaidEvents.map((event) => (
+              <RaidEventCard key={event.id} event={event} />
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

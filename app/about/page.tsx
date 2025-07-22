@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { CalendarIcon, UsersIcon, InfoIcon, StarIcon, ActivityIcon } from 'lucide-react'
 import type { WowGuild, WowGuildRoster, WowGuildAchievements, WowGuildActivities } from '@/app/shared/types'
 import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '@/app/config/guild'
-import { getBaseUrl } from '../lib/utils'
+import { getBaseUrl, formatDate } from '../lib/utils'
 import type { RaidHelperEvent, RaidHelperEventsResponse } from '../lib/types';
 import RaidEventCard from '../components/RaidEventCard';
 
@@ -68,6 +68,13 @@ async function getRaidHelperEvents(): Promise<RaidHelperEvent[]> {
 const About = async (): Promise<React.JSX.Element> => {
   const { guild, roster, achievements, activity } = await getGuildData();
   const raidEvents = await getRaidHelperEvents();
+
+  // Sort raid events by start time (earliest first)
+  const sortedRaidEvents = raidEvents.sort((a, b) => {
+    const dateA = new Date(a.startTime).getTime();
+    const dateB = new Date(b.startTime).getTime();
+    return dateA - dateB;
+  });
 
   // Format guild info with fallbacks
   const guildInfo = {
@@ -182,15 +189,15 @@ const About = async (): Promise<React.JSX.Element> => {
             <h2 className="text-2xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-6 flex items-center">
               <CalendarIcon className="mr-2 h-6 w-6" /> Raid Schedule
             </h2>
-            {raidEvents.length === 0 ? (
+            {sortedRaidEvents.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-lg">
                   No upcoming events found.
                 </p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {raidEvents.map((event) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {sortedRaidEvents.map((event) => (
                   <RaidEventCard key={event.id} event={event} />
                 ))}
               </div>
@@ -211,7 +218,7 @@ const About = async (): Promise<React.JSX.Element> => {
                 </span>
                 <span className="text-pandaria-dark dark:text-pandaria-light">
                   {guildInfo.created
-                    ? new Date(guildInfo.created).toLocaleDateString('fr-FR')
+                    ? formatDate(guildInfo.created, 'fr-FR')
                     : 'Unknown'}
                 </span>
               </div>
@@ -264,7 +271,7 @@ const About = async (): Promise<React.JSX.Element> => {
                       {event.achievement.name}
                     </div>
                     <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-xs">
-                      {new Date(event.timestamp).toLocaleDateString('fr-FR')}
+                      {formatDate(event.timestamp, 'fr-FR')}
                     </div>
                     <div className="text-pandaria-secondary dark:text-pandaria-accent text-xs">
                       10 points
@@ -319,7 +326,7 @@ const About = async (): Promise<React.JSX.Element> => {
                           </div>
                        )}
                       <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-xs">
-                        {new Date(act.timestamp).toLocaleDateString('fr-FR')}
+                        {formatDate(act.timestamp, 'fr-FR')}
                       </div>
                     </div>
                   ))}

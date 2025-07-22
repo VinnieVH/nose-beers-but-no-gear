@@ -5,11 +5,7 @@ import { SunIcon } from 'lucide-react'
 import { Suspense } from 'react'
 import MobileNavigation from './MobileNavigation'
 import MobileMenuButton from './MobileMenuButton'
-
-interface NavLinkProps {
-  to: string
-  children: React.ReactNode
-}
+import NavLinks from './NavLinks'
 
 // Placeholder theme toggle (no-op)
 const ThemeToggle = (): React.JSX.Element => (
@@ -46,10 +42,7 @@ const Header = (): React.JSX.Element => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <nav className="flex items-center space-x-8">
-              <NavLink to="/">Home</NavLink>
-              <NavLink to="/roster">Roster</NavLink>
-              <NavLink to="/raids">Raids</NavLink>
-              <NavLink to="/about">About</NavLink>
+              <NavLinks orientation="horizontal" />
             </nav>
             <ThemeToggle />
           </div>
@@ -69,14 +62,5 @@ const Header = (): React.JSX.Element => {
     </header>
   )
 }
-
-const NavLink = ({ to, children }: NavLinkProps): React.JSX.Element => (
-  <Link
-    href={to}
-    className="text-pandaria-dark dark:text-pandaria-light hover:text-pandaria-secondary dark:hover:text-pandaria-accent transition-colors px-4 py-2 rounded-full hover:bg-pandaria-primary/10 dark:hover:bg-pandaria-primary/20 border border-transparent hover:border-pandaria-primary/20 font-medium"
-  >
-    {children}
-  </Link>
-)
 
 export default Header 
