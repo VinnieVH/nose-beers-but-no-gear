@@ -85,4 +85,27 @@ export interface GuildData {
   guildInfo: GuildInfo
   members: Member[]
   logs: Log[]
+}
+
+// =========================
+// Raid-helper API Types
+// =========================
+
+export interface RaidHelperEvent {
+  id: string;
+  name: string;
+  description: string;
+  startTime: number;
+  endTime: number;
+  channelId: string;
+  signUps?: unknown[]; // To be refined if sign-up structure is known
+  [key: string]: unknown; // Allow extra fields for forward compatibility
+}
+
+export interface RaidHelperEventsResponse {
+  pages: number;
+  currentPage: number;
+  eventCountOverall: number;
+  eventCountTransmitted: number;
+  postedEvents: RaidHelperEvent[];
 } 

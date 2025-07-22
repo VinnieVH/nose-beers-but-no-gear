@@ -4,6 +4,8 @@ import { CalendarIcon, UsersIcon, InfoIcon, StarIcon, ActivityIcon } from 'lucid
 import type { WowGuild, WowGuildRoster, WowGuildAchievements, WowGuildActivities } from '@/app/shared/types'
 import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '@/app/config/guild'
 import { getBaseUrl } from '../lib/utils'
+import type { RaidHelperEvent, RaidHelperEventsResponse } from '../lib/types';
+import RaidEventCard from '../components/RaidEventCard';
 
 interface GuildData {
   guild: WowGuild | null
@@ -44,8 +46,28 @@ async function getGuildData(): Promise<GuildData> {
   }
 }
 
+async function getRaidHelperEvents(): Promise<RaidHelperEvent[]> {
+  try {
+    const baseUrl = getBaseUrl();
+    const response = await fetch(`${baseUrl}/api/raid-helper`, {
+      next: { revalidate: 300 }, // cache for 5 minutes
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch raid events');
+    }
+    const data: RaidHelperEventsResponse = await response.json();
+    console.log(data);
+    return data.postedEvents || [];
+  } catch (error) {
+    console.error('Error fetching raid-helper events:', error);
+    return [];
+  }
+}
+
 const About = async (): Promise<React.JSX.Element> => {
   const { guild, roster, achievements, activity } = await getGuildData();
+  const raidEvents = await getRaidHelperEvents();
 
   // Format guild info with fallbacks
   const guildInfo = {
@@ -93,9 +115,9 @@ const About = async (): Promise<React.JSX.Element> => {
       </div>
 
       {/* About Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-        <div className="lg:col-span-2">
-          <div className="bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 lg:min-h-full">
+        <div className="lg:col-span-2 flex flex-col gap-8 lg:h-full">
+          <div className="bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300 flex-1 h-full">
             <h2 className="text-2xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-6 flex items-center">
               <InfoIcon className="mr-2 h-6 w-6" /> About Us
             </h2>
@@ -148,8 +170,31 @@ const About = async (): Promise<React.JSX.Element> => {
               </ul>
               <h3 className="text-xl font-semibold text-pandaria-secondary dark:text-pandaria-accent mt-6 mb-3">
                 Guild History
-              </h3> 
+              </h3>
+              <p>
+                Our roots go back to the guild <strong>Wipe Inc</strong>, where many of our founding members raided together since The Burning Crusade (TBC). As a team, we have steadily cleared all content through the years, culminating in our triumph over the Lich King on heroic difficulty. Our legacy of teamwork and progression continues in Nose Beers But No Gear.
+              </p>
             </div>
+          </div>
+
+          {/* Raid Schedule */}
+          <div className="bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
+            <h2 className="text-2xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-6 flex items-center">
+              <CalendarIcon className="mr-2 h-6 w-6" /> Raid Schedule
+            </h2>
+            {raidEvents.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-lg">
+                  No upcoming events found.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {raidEvents.map((event) => (
+                  <RaidEventCard key={event.id} event={event} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -286,57 +331,6 @@ const About = async (): Promise<React.JSX.Element> => {
                 </p>
               </div>
             )}
-          </div>
-        </div>
-      </div>
-
-      {/* Raid Schedule */}
-      <div className="bg-white dark:bg-pandaria-dark rounded-lg p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300 mb-8">
-        <h2 className="text-2xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-6 flex items-center">
-          <CalendarIcon className="mr-2 h-6 w-6" /> Raid Schedule
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 className="text-lg font-semibold text-pandaria-primary dark:text-pandaria-primaryLight mb-3">
-              Progression Raids
-            </h3>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg">
-                <div>
-                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">Tuesday</div>
-                  <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-sm">8:00 PM - 11:00 PM EST</div>
-                </div>
-                <div className="text-pandaria-primary dark:text-pandaria-primaryLight font-medium">Progression</div>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg">
-                <div>
-                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">Thursday</div>
-                  <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-sm">8:00 PM - 11:00 PM EST</div>
-                </div>
-                <div className="text-pandaria-primary dark:text-pandaria-primaryLight font-medium">Progression</div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-pandaria-primary dark:text-pandaria-primaryLight mb-3">
-              Social Events
-            </h3>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg">
-                <div>
-                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">Saturday</div>
-                  <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-sm">7:00 PM - 9:00 PM EST</div>
-                </div>
-                <div className="text-pandaria-primary dark:text-pandaria-primaryLight font-medium">Social</div>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg">
-                <div>
-                  <div className="text-pandaria-dark dark:text-pandaria-light font-medium">Sunday</div>
-                  <div className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-sm">2:00 PM - 5:00 PM EST</div>
-                </div>
-                <div className="text-pandaria-primary dark:text-pandaria-primaryLight font-medium">Alt Raids</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

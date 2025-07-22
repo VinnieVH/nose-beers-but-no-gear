@@ -1,12 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
-import {
-  UsersIcon,
-  TrophyIcon,
-  BeerIcon,
-  HeartIcon,
-} from 'lucide-react'
+import { UsersIcon, TrophyIcon } from 'lucide-react'
+import { DISCORD_INVITE_URL } from './config/guild'
 import type { GuildInfo, Member } from './lib/types'
 import type { WowGuildMember } from './shared/types'
 import { getBaseUrl, getClassColor, getClassNameById } from './lib/utils'
@@ -24,7 +19,6 @@ export default async function Home(): Promise<React.JSX.Element> {
     })
     if (data.ok) {
       const responseData = await data.json()
-      console.log(responseData)
       // Map Blizzard API response to GuildInfo and Member[]
       guildInfo = {
         name: responseData.guild.name,
@@ -45,7 +39,6 @@ export default async function Home(): Promise<React.JSX.Element> {
         role: '' // Not available in Blizzard API
       }))
 
-      console.log(guildInfo)
     } else {
       throw new Error(`API request failed: ${data.status}`)
     }
@@ -216,7 +209,17 @@ export default async function Home(): Promise<React.JSX.Element> {
               </h2>
             </div>
             <ul className="space-y-3">
-              {/* Logs data removed as per new_code */}
+              {true ? (
+                <li className="flex flex-col items-center justify-center py-8">
+                  <svg className="w-12 h-12 text-pandaria-primary dark:text-pandaria-primaryLight mb-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span className="text-pandaria-dark/70 dark:text-pandaria-light/70 text-base text-center">
+                    No adventures logged yet for this expansion.<br />Check back after our first raid!
+                  </span>
+                </li>
+              ) : (
+                /* Render logs here if present */
+                null
+              )}
             </ul>
             <Link
               href="/raids"
@@ -230,81 +233,21 @@ export default async function Home(): Promise<React.JSX.Element> {
 
       {/* Recruitment Section */}
       <div className="bg-pandaria-paper dark:bg-pandaria-dark/40 py-16 transition-colors duration-300">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 flex flex-col items-center justify-center">
           <h2 className="text-3xl font-bold text-pandaria-secondary dark:text-pandaria-accent text-center mb-8 font-pandaren">
-            Join Our Merry Band of Misfits!
+            Join Our Discord
           </h2>
-          <div className="max-w-3xl mx-auto bg-white dark:bg-pandaria-dark rounded-xl p-6 border border-pandaria-primary/20 dark:border-pandaria-primary/30 shadow-lg transition-colors duration-300">
-            <p className="text-pandaria-dark dark:text-pandaria-light mb-6">
-              <span className="text-pandaria-secondary dark:text-pandaria-accent font-semibold">Nose Beers But No Gear</span> is recruiting fun-loving players who don&apos;t
-              take themselves too seriously! We raid twice a week, drink thrice
-              a week, and laugh every day. If you can take a joke and
-              occasionally dish one out, you&apos;ll fit right in!
-            </p>
-            <h3 className="text-xl font-semibold text-pandaria-primary dark:text-pandaria-primaryLight mb-4 font-pandaren">
-              Currently Looking For:
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-              <div className="flex items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg border border-pandaria-primary/10 dark:border-pandaria-primary/30 hover:transform hover:scale-105 transition-transform">
-                <Image
-                  src="https://wow.zamimg.com/images/wow/icons/large/classicon_monk.jpg"
-                  alt="Monk"
-                  width={40}
-                  height={40}
-                  className="w-10 h-10 mr-3 rounded-md"
-                />
-                <div>
-                  <h4 className="font-semibold text-pandaria-dark dark:text-pandaria-light">Monk</h4>
-                  <p className="text-sm text-pandaria-dark/70 dark:text-pandaria-light/70">Tank/Healer</p>
-                </div>
-              </div>
-              <div className="flex items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg border border-pandaria-primary/10 dark:border-pandaria-primary/30 hover:transform hover:scale-105 transition-transform">
-                <Image
-                  src="https://wow.zamimg.com/images/wow/icons/large/classicon_priest.jpg"
-                  alt="Priest"
-                  width={40}
-                  height={40}
-                  className="w-10 h-10 mr-3 rounded-md"
-                />
-                <div>
-                  <h4 className="font-semibold text-pandaria-dark dark:text-pandaria-light">Priest</h4>
-                  <p className="text-sm text-pandaria-dark/70 dark:text-pandaria-light/70">Healer</p>
-                </div>
-              </div>
-              <div className="flex items-center p-3 bg-pandaria-paper dark:bg-pandaria-primary/10 rounded-lg border border-pandaria-primary/10 dark:border-pandaria-primary/30 hover:transform hover:scale-105 transition-transform">
-                <Image
-                  src="https://wow.zamimg.com/images/wow/icons/large/classicon_mage.jpg"
-                  alt="Mage"
-                  width={40}
-                  height={40}
-                  className="w-10 h-10 mr-3 rounded-md"
-                />
-                <div>
-                  <h4 className="font-semibold text-pandaria-dark dark:text-pandaria-light">Mage</h4>
-                  <p className="text-sm text-pandaria-dark/70 dark:text-pandaria-light/70">DPS</p>
-                </div>
-              </div>
-            </div>
-            <div className="text-center">
-              <p className="text-pandaria-dark dark:text-pandaria-light mb-4">
-                <strong>Requirements:</strong> Sense of humor, ability to laugh at yourself, and a love for craft beer!
-              </p>
-              <div className="flex flex-wrap gap-4 justify-center">
-                <div className="flex items-center text-pandaria-primary dark:text-pandaria-primaryLight">
-                  <BeerIcon className="h-5 w-5 mr-2" />
-                  <span className="text-sm">Beer Appreciation</span>
-                </div>
-                <div className="flex items-center text-pandaria-primary dark:text-pandaria-primaryLight">
-                  <HeartIcon className="h-5 w-5 mr-2" />
-                  <span className="text-sm">Good Vibes</span>
-                </div>
-                <div className="flex items-center text-pandaria-primary dark:text-pandaria-primaryLight">
-                  <TrophyIcon className="h-5 w-5 mr-2" />
-                  <span className="text-sm">Casual Raiding</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <p className="text-pandaria-dark dark:text-pandaria-light text-lg text-center mb-6 max-w-2xl">
+            Want to raid, hang out, or just share a laugh? Our Discord is the heart of our community. Click below to join the fun!
+          </p>
+          <a
+            href={DISCORD_INVITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-8 py-4 bg-pandaria-primary hover:bg-pandaria-primaryLight dark:bg-pandaria-primaryDark dark:hover:bg-pandaria-primary text-white text-xl font-bold rounded-full shadow-lg transition-colors duration-200"
+          >
+            Join Our Discord
+          </a>
         </div>
       </div>
     </div>

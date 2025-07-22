@@ -18,3 +18,5 @@ export const guildConfig = getGuildConfig()
 export const GUILD_NAME = guildConfig.name
 export const GUILD_REALM = guildConfig.realm  
 export const GUILD_REGION = guildConfig.region
+
+export const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/FWCgRQmpxk';
