@@ -38,19 +38,11 @@ export const getClassBadgeColor = (className: string): string => {
 }
 
 export function getBaseUrl(): string {
+  const vercelUrl = 'nose-beers-but-no-gear.vercel.app/'
   // Check for Vercel deployment URL
-  if (process.env.VERCEL_URL) {
+  if (process.env.NODE_ENV === 'production') {
     // Vercel URL might already include protocol, so handle both cases
-    const vercelUrl = process.env.VERCEL_URL
-    if (vercelUrl.startsWith('http')) {
-      return vercelUrl
-    }
     return `https://${vercelUrl}`
-  }
-  
-  // Check for custom domain in production
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL
   }
   
   // Fallback to localhost for development
