@@ -5,6 +5,7 @@ import { SearchIcon, FilterIcon } from 'lucide-react'
 import type { Member } from '../lib/types'
 import { getClassColor, getClassBadgeColor, getRankPriority } from '../lib/utils'
 import StatsCard from './StatsCard'
+import Link from 'next/link'
 
 interface RosterTableProps {
   members: Member[]
@@ -123,37 +124,46 @@ const RosterTable = ({ members }: RosterTableProps): React.JSX.Element => {
             </thead>
             <tbody className="divide-y divide-pandaria-primary/10 dark:divide-pandaria-primary/20">
               {filteredAndSortedMembers.map((member, index) => (
-                <tr
+                <Link
                   key={index}
-                  className="hover:bg-pandaria-paper dark:hover:bg-pandaria-primary/10 transition-colors duration-200"
+                  href={{
+                    pathname: `/roster/${member.name.toLowerCase()}`
+                  }}
+                  passHref
+                  legacyBehavior
                 >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div
-                        className={`w-3 h-3 rounded-full mr-2 ${getClassColor(member.class)}`}
-                      ></div>
-                      <div className="text-sm font-medium text-pandaria-dark dark:text-pandaria-light">
-                        {member.name}
+                  <tr
+                    className="hover:bg-pandaria-paper dark:hover:bg-pandaria-primary/10 transition-colors duration-200 cursor-pointer"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div
+                          className={`w-3 h-3 rounded-full mr-2 ${getClassColor(member.class)}`}
+                        ></div>
+                        <div className="text-sm font-medium text-pandaria-dark dark:text-pandaria-light">
+                          {member.name}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
-                    {member.level}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full border ${getClassBadgeColor(member.class)}`}
-                    >
-                      {member.class}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
-                    {member.role}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
-                    {member.rank}
-                  </td>
-                </tr>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
+                      {member.level}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full border ${getClassBadgeColor(member.class)}`}
+                      >
+                        {member.class}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
+                      {member.role}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
+                      {member.rank}
+                    </td>
+                  </tr>
+                </Link>
               ))}
             </tbody>
           </table>

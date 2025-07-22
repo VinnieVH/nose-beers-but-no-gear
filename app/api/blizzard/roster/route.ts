@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '@/app/config/guild'
-import { WowAPI, getGuildSlug, getRealmSlug } from '@/app/lib/wowApi'
+import { WowAPI } from '@/app/lib/wowApi'
 
 // Create instance
 const wowApi = new WowAPI()
@@ -28,10 +28,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       )
     }
 
-    const realmSlug = getRealmSlug(realmName)
-    const guildSlug = getGuildSlug(guildName)
-
-    const rosterData = await wowApi.fetchGuildRoster(realmSlug, guildSlug, region)
+    const rosterData = await wowApi.fetchGuildRoster()
 
     if (!rosterData) {
       return NextResponse.json(

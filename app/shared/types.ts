@@ -386,4 +386,14 @@ export interface ThemeContextType {
   toggleTheme: () => void
 }
 
+// Blizzard WoW Item Media API response type
+export interface WowItemMedia {
+  _links: { self: { href: string } };
+  id: number;
+  assets: Array<{
+    key: string;
+    value: string;
+  }>;
+}
+
  

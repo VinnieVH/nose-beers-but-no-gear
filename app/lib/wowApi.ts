@@ -3,8 +3,10 @@ import type {
   WowGuildRoster, 
   WowGuildAchievements, 
   WowGuildActivities,
-  OAuthTokenResponse 
+  OAuthTokenResponse,
+  WowItemMedia 
 } from '@/app/shared/types'
+import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '../config/guild'
 
 export class WowAPI {
   private accessToken: string | null = null
@@ -36,9 +38,9 @@ export class WowAPI {
     }
   }
 
-  private getNamespace(region: string): string {
+  private getNamespace(isStatic: boolean = false): string {
     // Use the exact namespace format from the API documentation
-    return `profile-classic-${region.toLowerCase()}`
+    return isStatic ? `static-classic-${GUILD_REGION.toLowerCase()}` : `profile-classic-${GUILD_REGION.toLowerCase()}`
   }
 
   private async getAccessToken(): Promise<string> {
@@ -96,16 +98,16 @@ export class WowAPI {
 
   private async makeRequest<T = Record<string, unknown>>(
     endpoint: string, 
-    region: string,
-    params: Record<string, string> = {}
+    params: Record<string, string> = {},
+    namespace: string
+
   ): Promise<T> {
     const token = await this.getAccessToken()
-    const host = this.getRegionHost(region)
-    const namespace = this.getNamespace(region)
+    const host = this.getRegionHost(GUILD_REGION)
     
     const url = new URL(`${host}${endpoint}`)
     url.searchParams.set('namespace', namespace)
-    url.searchParams.set('locale', 'en_US')
+    url.searchParams.set('locale', 'en_GB')
     
     // Add any additional parameters
     Object.entries(params).forEach(([key, value]) => {
@@ -127,10 +129,10 @@ export class WowAPI {
     return response.json()
   }
 
-  async fetchGuild(realmSlug: string, guildSlug: string, region: string): Promise<WowGuild | null> {
+  async fetchGuild(): Promise<WowGuild | null> {
     try {
-      const endpoint = `/data/wow/guild/${realmSlug}/${guildSlug}`
-      const data = await this.makeRequest<WowGuild>(endpoint, region)
+      const endpoint = `/data/wow/guild/${getRealmSlug(GUILD_REALM)}/${getGuildSlug(GUILD_NAME)}`
+      const data = await this.makeRequest<WowGuild>(endpoint, {}, this.getNamespace())
       return data
     } catch (error) {
       console.error('Failed to fetch guild:', error)
@@ -138,10 +140,10 @@ export class WowAPI {
     }
   }
 
-  async fetchGuildRoster(realmSlug: string, guildSlug: string, region: string): Promise<WowGuildRoster | null> {
+  async fetchGuildRoster(): Promise<WowGuildRoster | null> {
     try {
-      const endpoint = `/data/wow/guild/${realmSlug}/${guildSlug}/roster`
-      const data = await this.makeRequest<WowGuildRoster>(endpoint, region)
+      const endpoint = `/data/wow/guild/${getRealmSlug(GUILD_REALM)}/${getGuildSlug(GUILD_NAME)}/roster`
+      const data = await this.makeRequest<WowGuildRoster>(endpoint, {}, this.getNamespace())
       return data
     } catch (error) {
       console.error('Failed to fetch guild roster:', error)
@@ -149,10 +151,10 @@ export class WowAPI {
     }
   }
 
-  async fetchGuildAchievements(realmSlug: string, guildSlug: string, region: string): Promise<WowGuildAchievements | null> {
+  async fetchGuildAchievements(): Promise<WowGuildAchievements | null> {
     try {
-      const endpoint = `/data/wow/guild/${realmSlug}/${guildSlug}/achievements`
-      const data = await this.makeRequest<WowGuildAchievements>(endpoint, region)
+      const endpoint = `/data/wow/guild/${getRealmSlug(GUILD_REALM)}/${getGuildSlug(GUILD_NAME)}/achievements`
+      const data = await this.makeRequest<WowGuildAchievements>(endpoint, {}, this.getNamespace())
       return data
     } catch (error) {
       console.error('Failed to fetch guild achievements:', error)
@@ -160,10 +162,10 @@ export class WowAPI {
     }
   }
 
-  async fetchGuildActivity(realmSlug: string, guildSlug: string, region: string): Promise<WowGuildActivities | null> {
+  async fetchGuildActivity(): Promise<WowGuildActivities | null> {
     try {
-      const endpoint = `/data/wow/guild/${realmSlug}/${guildSlug}/activity`
-      const data = await this.makeRequest<WowGuildActivities>(endpoint, region)
+      const endpoint = `/data/wow/guild/${getRealmSlug(GUILD_REALM)}/${getGuildSlug(GUILD_NAME)}/activity`
+      const data = await this.makeRequest<WowGuildActivities>(endpoint, {}, this.getNamespace())
       return data
     } catch (error) {
       console.error('Failed to fetch guild activity:', error)
@@ -171,7 +173,25 @@ export class WowAPI {
     }
   }
 
-  async fetchAllGuildData(realmSlug: string, guildSlug: string, region: string): Promise<{
+  /**
+   * Fetches the equipped items for a character
+   * @param characterName - The character name (lowercase)
+   */
+  async fetchCharacterEquipment(characterName: string): Promise<unknown> {
+    const endpoint = `/profile/wow/character/${getRealmSlug(GUILD_REALM)}/${characterName.toLowerCase()}/equipment`;
+    return this.makeRequest(endpoint, {}, this.getNamespace());
+  }
+
+  /**
+   * Fetches media for an item by itemId
+   * @param itemId - The item ID
+   */
+  async fetchItemMedia(itemId: string): Promise<WowItemMedia> {
+    const endpoint = `/data/wow/media/item/${itemId}`;
+    return this.makeRequest<WowItemMedia>(endpoint, {}, this.getNamespace(true));
+  }
+
+  async fetchAllGuildData(): Promise<{
     guild: WowGuild | null
     roster: WowGuildRoster | null
     achievements: WowGuildAchievements | null
@@ -180,10 +200,10 @@ export class WowAPI {
     try {
       // Fetch all guild data concurrently
       const [guild, roster, achievements, activity] = await Promise.all([
-        this.fetchGuild(realmSlug, guildSlug, region),
-        this.fetchGuildRoster(realmSlug, guildSlug, region),
-        this.fetchGuildAchievements(realmSlug, guildSlug, region),
-        this.fetchGuildActivity(realmSlug, guildSlug, region)
+        this.fetchGuild(),
+        this.fetchGuildRoster(),
+        this.fetchGuildAchievements(),
+        this.fetchGuildActivity()
       ])
 
       return { guild, roster, achievements, activity }

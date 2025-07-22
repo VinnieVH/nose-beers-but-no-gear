@@ -57,7 +57,6 @@ async function getRaidHelperEvents(): Promise<RaidHelperEvent[]> {
       throw new Error('Failed to fetch raid events');
     }
     const data: RaidHelperEventsResponse = await response.json();
-    console.log(data);
     return data.postedEvents || [];
   } catch (error) {
     console.error('Error fetching raid-helper events:', error);

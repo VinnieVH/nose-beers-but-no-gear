@@ -50,6 +50,12 @@ const nextConfig: NextConfig = {
         hostname: 'media.discordapp.net',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'render.worldofwarcraft.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
