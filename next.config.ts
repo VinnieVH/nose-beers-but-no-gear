@@ -11,6 +11,18 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'wow.zamimg.com',
+        port: '',
+        pathname: '/uploads/screenshots/normal/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'conquestcapped.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'assetsio.gnwcdn.com',
         port: '',
         pathname: '/**',

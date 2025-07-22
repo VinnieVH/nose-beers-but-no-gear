@@ -1,22 +1,10 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { SunIcon } from 'lucide-react'
 import { Suspense } from 'react'
 import MobileNavigation from './MobileNavigation'
 import MobileMenuButton from './MobileMenuButton'
 import NavLinks from './NavLinks'
-
-// Placeholder theme toggle (no-op)
-const ThemeToggle = (): React.JSX.Element => (
-  <button
-    className="p-2 rounded-full bg-pandaria-primary/10 dark:bg-pandaria-primary/20 hover:bg-pandaria-primary/20 dark:hover:bg-pandaria-primary/30 transition-colors"
-    aria-label="Toggle theme (not implemented)"
-    disabled
-  >
-    <SunIcon className="h-5 w-5 text-pandaria-accent" />
-  </button>
-)
 
 const Header = (): React.JSX.Element => {
   return (
@@ -44,11 +32,9 @@ const Header = (): React.JSX.Element => {
             <nav className="flex items-center space-x-8">
               <NavLinks orientation="horizontal" />
             </nav>
-            <ThemeToggle />
           </div>
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-4">
-            <ThemeToggle />
             <Suspense fallback={null}>
               <MobileMenuButton />
             </Suspense>
