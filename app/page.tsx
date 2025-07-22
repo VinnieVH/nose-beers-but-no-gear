@@ -89,7 +89,7 @@ export default async function Home(): Promise<React.JSX.Element> {
               href="/roster"
               className="px-6 py-3 bg-pandaria-primary hover:bg-pandaria-primaryLight dark:bg-pandaria-primaryDark dark:hover:bg-pandaria-primary text-white rounded-full font-medium transition-colors shadow-lg"
             >
-              Meet Our Pranksters
+              Meet Our Gamers
             </Link>
             <Link
               href="/raids"
