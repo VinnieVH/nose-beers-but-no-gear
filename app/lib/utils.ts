@@ -38,7 +38,7 @@ export const getClassBadgeColor = (className: string): string => {
 }
 
 export function getBaseUrl(): string {
-  const vercelUrl = 'nose-beers-but-no-gear.vercel.app/'
+  const vercelUrl = 'nose-beers-but-no-gear.vercel.app'
   // Check for Vercel deployment URL
   if (process.env.NODE_ENV === 'production') {
     // Vercel URL might already include protocol, so handle both cases
@@ -46,7 +46,7 @@ export function getBaseUrl(): string {
   }
   
   // Fallback to localhost for development
-  return 'http://localhost:3001'
+  return 'http://localhost:3000'
 }
 
 // Rank priority for sorting (higher number = higher priority)
@@ -130,6 +130,7 @@ export const getPerformanceColor = (percentage: number): string => {
   if (percentage >= 95) return 'text-quality-epic';
   if (percentage >= 90) return 'text-quality-rare';
   if (percentage >= 80) return 'text-quality-uncommon';
+  if (percentage >= 50) return 'text-quality-common';
   return 'text-quality-common';
 };
 

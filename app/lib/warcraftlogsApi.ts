@@ -1,9 +1,5 @@
 import type { WarcraftLogsGuild, WarcraftLogsReport, WarcraftLogsCharacter, OAuthTokenResponse, Fight } from './types'
-
-// Guild configuration
-const GUILD_NAME = process.env.GUILD_NAME || 'Nose Beers But No Gear'
-const GUILD_REALM = process.env.GUILD_REALM || 'Area 52'
-const GUILD_REGION = process.env.GUILD_REGION || 'us'
+import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '@/app/config/guild'
 
 class WarcraftLogsAPI {
   private accessToken: string | null = null
@@ -251,6 +247,68 @@ class WarcraftLogsAPI {
     }
   }
 
+  async fetchReportFightsBatch(
+    reportCodes: string[],
+    killType?: 'kills' | 'wipes' | 'encounters' | 'trash'
+  ): Promise<Record<string, Fight[]>> {
+    if (reportCodes.length === 0) {
+      return {}
+    }
+
+    let killTypeValue: string | undefined
+    switch (killType) {
+      case 'kills':
+        killTypeValue = 'Kills'
+        break
+      case 'wipes':
+        killTypeValue = 'Wipes'
+        break
+      case 'encounters':
+        killTypeValue = 'Encounters'
+        break
+      case 'trash':
+        killTypeValue = 'Trash'
+        break
+      default:
+        killTypeValue = undefined
+    }
+
+    // Build dynamic variables and aliases for a single GraphQL request
+    const varDecls: string[] = []
+    const varValues: Record<string, unknown> = { killType: killTypeValue }
+    const reportSelections: string[] = []
+
+    reportCodes.forEach((code, index) => {
+      const varName = `code${index}`
+      varDecls.push(`$${varName}: String!`)
+      varValues[varName] = code
+      reportSelections.push(`r${index}: report(code: $${varName}) { fights(killType: $killType) { id kill encounterID difficulty size startTime endTime name } }`)
+    })
+
+    const query = `
+      query(${varDecls.join(', ')}, $killType: KillType) {
+        reportData {
+          ${reportSelections.join('\n          ')}
+        }
+      }
+    `
+
+    try {
+      const data = await this.makeGraphQLRequest<{ reportData: Record<string, { fights: Fight[] }> }>(query, varValues)
+      const result: Record<string, Fight[]> = {}
+
+      reportCodes.forEach((code, index) => {
+        const alias = `r${index}`
+        result[code] = data.reportData?.[alias]?.fights || []
+      })
+
+      return result
+    } catch (error) {
+      console.error('Failed to fetch report fights batch:', error)
+      return {}
+    }
+  }
+
   async fetchGuildMembers(guildName: string, serverSlug: string, serverRegion: string, limit = 100): Promise<WarcraftLogsCharacter[]> {
     const query = `
       query($guildName: String!, $serverSlug: String!, $serverRegion: String!, $limit: Int!) {
@@ -344,14 +402,14 @@ export const fetchAllGuildData = async (
       api.fetchGuildReports(guildName, serverSlug, serverRegion)
     ])
 
-    // If includeFights is true, fetch fights for each report
+    // If includeFights is true, fetch fights for each report via a single batched query
     if (includeFights && reports.length > 0) {
-      const reportsWithFights = await Promise.all(
-        reports.map(async (report: WarcraftLogsReport) => {
-          const fights = await api.fetchReportFights(report.code)
-          return { ...report, fights }
-        })
-      )
+      const codeList = reports.map(r => r.code)
+      const fightsByReport = await api.fetchReportFightsBatch(codeList)
+      const reportsWithFights = reports.map((report: WarcraftLogsReport) => ({
+        ...report,
+        fights: fightsByReport[report.code] || []
+      }))
       return { guildInfo, members, reports: reportsWithFights }
     }
 

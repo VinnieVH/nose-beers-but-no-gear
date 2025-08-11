@@ -1,17 +1,54 @@
 import React from 'react'
 import Image from 'next/image'
 import { CalendarIcon, UsersIcon, InfoIcon, StarIcon, ActivityIcon } from 'lucide-react'
-import type { WowGuild, WowGuildRoster, WowGuildAchievements, WowGuildActivities } from '@/app/shared/types'
+import type { WowGuild, WowGuildRoster, WowGuildAchievements, WowGuildActivities, WowItemMedia } from '@/app/shared/types'
 import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '@/app/config/guild'
 import { getBaseUrl, formatDate } from '../lib/utils'
 import type { RaidHelperEvent, RaidHelperEventsResponse } from '../lib/types';
+import { WowFaction as WowFactionEnum } from '@/app/shared/enums'
 import RaidEventCard from '../components/RaidEventCard';
+import GuildCrest from '../components/GuildCrest'
 
 interface GuildData {
   guild: WowGuild | null
   roster: WowGuildRoster | null
   achievements: WowGuildAchievements | null
   activity: WowGuildActivities | null
+}
+
+type CrestResponse = WowItemMedia | { emblem: WowItemMedia; border: WowItemMedia | null }
+
+async function getGuildCrest(
+  guild: WowGuild | null
+): Promise<{ emblemUrl: string | null; borderUrl: string | null }> {
+  if (!guild || !guild.crest || !guild.crest.emblem || !guild.crest.emblem.media || typeof guild.crest.emblem.media.id !== 'number') {
+    return { emblemUrl: null, borderUrl: null }
+  }
+
+  try {
+    const baseUrl = getBaseUrl()
+    const borderIdParam = guild.crest.border?.media?.id
+    const url = `${baseUrl}/api/blizzard/guild-crest?emblemId=${guild.crest.emblem.media.id}${borderIdParam !== undefined ? `&borderId=${borderIdParam}` : ''}`
+    const response = await fetch(url, {
+      next: { revalidate: 86400 }
+    })
+
+    if (!response.ok) {
+      return { emblemUrl: null, borderUrl: null }
+    }
+
+    const data: CrestResponse = await response.json()
+    if ('assets' in data) {
+      const emblemAsset = data.assets.find((a) => a.key === 'icon') || data.assets[0]
+      return { emblemUrl: emblemAsset?.value || null, borderUrl: null }
+    }
+    const emblemAsset = data.emblem.assets.find((a) => a.key === 'icon') || data.emblem.assets[0]
+    const borderAsset = data.border ? (data.border.assets.find((a) => a.key === 'icon') || data.border.assets[0]) : undefined
+    return { emblemUrl: emblemAsset?.value || null, borderUrl: borderAsset?.value || null }
+  } catch (error) {
+    console.error('Error fetching guild crest media:', error)
+    return { emblemUrl: null, borderUrl: null }
+  }
 }
 
 async function getGuildData(): Promise<GuildData> {
@@ -67,6 +104,10 @@ async function getRaidHelperEvents(): Promise<RaidHelperEvent[]> {
 const About = async (): Promise<React.JSX.Element> => {
   const { guild, roster, achievements, activity } = await getGuildData();
   const raidEvents = await getRaidHelperEvents();
+  const { emblemUrl, borderUrl } = await getGuildCrest(guild)
+  const bgColor = guild?.crest?.background?.color?.rgba ?? null
+  const brColor = guild?.crest?.border?.color?.rgba ?? null
+  const emColor = guild?.crest?.emblem?.color?.rgba ?? null
 
   // Sort raid events by start time (earliest first)
   const sortedRaidEvents = raidEvents.sort((a, b) => {
@@ -78,7 +119,7 @@ const About = async (): Promise<React.JSX.Element> => {
   // Format guild info with fallbacks
   const guildInfo = {
     realm: guild?.realm?.name || GUILD_REALM,
-    faction: guild?.faction?.name || 'Alliance',
+    faction: guild?.faction?.name?.toLowerCase() === 'horde' ? WowFactionEnum.Horde : WowFactionEnum.Alliance,
     memberCount: guild?.member_count || roster?.members?.length || 0,
     created: guild?.created_timestamp ? new Date(guild.created_timestamp).toISOString() : '2023-01-15T00:00:00.000Z',
     name: guild?.name || GUILD_NAME
@@ -101,13 +142,22 @@ const About = async (): Promise<React.JSX.Element> => {
         <div className="absolute inset-0 bg-gradient-to-t from-pandaria-dark to-transparent"></div>
         <div className="absolute bottom-0 left-0 p-6">
           <div className="flex items-center">
-            <Image
-              src="https://wow.zamimg.com/images/wow/icons/large/ui_allianceicon-round.jpg"
-              alt="Guild Logo"
-              width={64}
-              height={64}
-              className="w-16 h-16 rounded border-2 border-pandaria-accent mr-4"
-            />
+            <div className="mr-4">
+              <GuildCrest
+                emblemUrl={
+                  emblemUrl ||
+                  (guildInfo.faction === WowFactionEnum.Horde
+                    ? 'https://wow.zamimg.com/images/wow/icons/large/ui_hordeicon-round.jpg'
+                    : 'https://wow.zamimg.com/images/wow/icons/large/ui_allianceicon-round.jpg')
+                }
+                borderUrl={borderUrl}
+                backgroundColor={bgColor}
+                borderColor={brColor}
+                emblemColor={emColor}
+                size={64}
+                faction={guildInfo.faction}
+              />
+            </div>
             <div>
               <h2 className="text-3xl font-bold text-pandaria-secondary dark:text-pandaria-accent">
                 {guildInfo.name}

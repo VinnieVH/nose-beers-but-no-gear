@@ -10,10 +10,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const api = new WowAPI();
-    const data = await api.fetchItemMedia(itemId);
-    return NextResponse.json(data);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch item media', details: (error as Error).message }, { status: 500 });
+    const api = new WowAPI()
+    const data = await api.fetchItemMedia(itemId)
+    return NextResponse.json(data)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: 'Failed to fetch item media', details: message }, { status: 500 });
   }
 } 

@@ -79,7 +79,7 @@ export const getFallbackData = (): { guildInfo: GuildInfo; members: Member[]; lo
   return {
     guildInfo: {
       name: 'Nose Beers But No Gear',
-      realm: 'Area 52',
+      realm: 'Pyrewood Village',
       faction: 'Alliance',
       created: '2012-09-25T00:00:00Z',
       level: 25,

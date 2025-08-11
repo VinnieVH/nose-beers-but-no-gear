@@ -61,7 +61,7 @@ export class WowAPI {
     // Create a new token request promise
     this.tokenPromise = (async (): Promise<string> => {
       try {
-        const credentials = btoa(`${this.clientId}:${this.clientSecret}`)
+        const credentials = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64')
         
         // Use US region for OAuth (standard for all regions except CN)
         const oauthHost = 'https://oauth.battle.net'
@@ -96,7 +96,7 @@ export class WowAPI {
     return this.tokenPromise
   }
 
-  private async makeRequest<T = Record<string, unknown>>(
+  private async makeGetRequest<T = Record<string, unknown>>(
     endpoint: string, 
     params: Record<string, string> = {},
     namespace: string
@@ -132,7 +132,7 @@ export class WowAPI {
   async fetchGuild(): Promise<WowGuild | null> {
     try {
       const endpoint = `/data/wow/guild/${getRealmSlug(GUILD_REALM)}/${getGuildSlug(GUILD_NAME)}`
-      const data = await this.makeRequest<WowGuild>(endpoint, {}, this.getNamespace())
+      const data = await this.makeGetRequest<WowGuild>(endpoint, {}, this.getNamespace())
       return data
     } catch (error) {
       console.error('Failed to fetch guild:', error)
@@ -143,7 +143,7 @@ export class WowAPI {
   async fetchGuildRoster(): Promise<WowGuildRoster | null> {
     try {
       const endpoint = `/data/wow/guild/${getRealmSlug(GUILD_REALM)}/${getGuildSlug(GUILD_NAME)}/roster`
-      const data = await this.makeRequest<WowGuildRoster>(endpoint, {}, this.getNamespace())
+      const data = await this.makeGetRequest<WowGuildRoster>(endpoint, {}, this.getNamespace())
       return data
     } catch (error) {
       console.error('Failed to fetch guild roster:', error)
@@ -154,7 +154,7 @@ export class WowAPI {
   async fetchGuildAchievements(): Promise<WowGuildAchievements | null> {
     try {
       const endpoint = `/data/wow/guild/${getRealmSlug(GUILD_REALM)}/${getGuildSlug(GUILD_NAME)}/achievements`
-      const data = await this.makeRequest<WowGuildAchievements>(endpoint, {}, this.getNamespace())
+      const data = await this.makeGetRequest<WowGuildAchievements>(endpoint, {}, this.getNamespace())
       return data
     } catch (error) {
       console.error('Failed to fetch guild achievements:', error)
@@ -165,7 +165,7 @@ export class WowAPI {
   async fetchGuildActivity(): Promise<WowGuildActivities | null> {
     try {
       const endpoint = `/data/wow/guild/${getRealmSlug(GUILD_REALM)}/${getGuildSlug(GUILD_NAME)}/activity`
-      const data = await this.makeRequest<WowGuildActivities>(endpoint, {}, this.getNamespace())
+      const data = await this.makeGetRequest<WowGuildActivities>(endpoint, {}, this.getNamespace())
       return data
     } catch (error) {
       console.error('Failed to fetch guild activity:', error)
@@ -179,7 +179,7 @@ export class WowAPI {
    */
   async fetchCharacterEquipment(characterName: string): Promise<unknown> {
     const endpoint = `/profile/wow/character/${getRealmSlug(GUILD_REALM)}/${characterName.toLowerCase()}/equipment`;
-    return this.makeRequest(endpoint, {}, this.getNamespace());
+    return this.makeGetRequest(endpoint, {}, this.getNamespace());
   }
 
   /**
@@ -188,7 +188,25 @@ export class WowAPI {
    */
   async fetchItemMedia(itemId: string): Promise<WowItemMedia> {
     const endpoint = `/data/wow/media/item/${itemId}`;
-    return this.makeRequest<WowItemMedia>(endpoint, {}, this.getNamespace(true));
+    return this.makeGetRequest<WowItemMedia>(endpoint, {}, this.getNamespace(true));
+  }
+
+  /**
+   * Fetches media for a guild crest emblem by emblemId
+   * @param emblemId - The emblem ID
+   */
+  async fetchGuildCrestEmblemMedia(emblemId: string): Promise<WowItemMedia> {
+    const endpoint = `/data/wow/media/guild-crest/emblem/${emblemId}`
+    return this.makeGetRequest<WowItemMedia>(endpoint, {}, this.getNamespace(true))
+  }
+
+  /**
+   * Fetches media for a guild crest border by borderId
+   * @param borderId - The border ID
+   */
+  async fetchGuildCrestBorderMedia(borderId: string): Promise<WowItemMedia> {
+    const endpoint = `/data/wow/media/guild-crest/border/${borderId}`
+    return this.makeGetRequest<WowItemMedia>(endpoint, {}, this.getNamespace(true))
   }
 
   async fetchAllGuildData(): Promise<{
