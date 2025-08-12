@@ -1,4 +1,4 @@
-import { getGuildSlug, getRealmSlug } from './../../lib/wowApi';
+import { getGuildSlug, getRealmSlug } from '@/app/lib/utils';
 import { NextResponse } from 'next/server'
 import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '@/app/config/guild'
 import { WowAPI } from '@/app/lib/wowApi'

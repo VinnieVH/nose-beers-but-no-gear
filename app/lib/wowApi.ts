@@ -4,9 +4,11 @@ import type {
   WowGuildAchievements, 
   WowGuildActivities,
   OAuthTokenResponse,
-  WowItemMedia 
+  WowItemMedia,
+  WowCharacterMedia 
 } from '@/app/shared/types'
 import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '../config/guild'
+import { getGuildSlug, getRealmSlug } from './utils'
 
 export class WowAPI {
   private accessToken: string | null = null
@@ -192,6 +194,17 @@ export class WowAPI {
   }
 
   /**
+   * Fetches character media and returns the avatar URL if available.
+   * @param characterName - The character name (lowercase)
+   */
+  async fetchCharacterAvatarUrl(characterName: string): Promise<string | null> {
+    const endpoint = `/profile/wow/character/${getRealmSlug(GUILD_REALM)}/${characterName.toLowerCase()}/character-media`;
+    const media = await this.makeGetRequest<WowCharacterMedia>(endpoint, {}, this.getNamespace());
+    const avatar = media?.assets?.find((a) => a.key === 'avatar');
+    return avatar?.value ?? null;
+  }
+
+  /**
    * Fetches media for a guild crest emblem by emblemId
    * @param emblemId - The emblem ID
    */
@@ -230,24 +243,4 @@ export class WowAPI {
       return { guild: null, roster: null, achievements: null, activity: null }
     }
   }
-}
-
-// Helper function to convert guild name to slug format
-export const getGuildSlug = (guildName: string): string => {
-  return guildName
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-    .trim()
-}
-
-// Helper function to convert realm name to slug format
-export const getRealmSlug = (realmName: string): string => {
-  return realmName
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-']/g, '') // Remove special characters except spaces, hyphens, and apostrophes
-    .replace(/['\s]+/g, '-') // Replace apostrophes and spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-    .trim()
 }

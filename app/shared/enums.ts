@@ -82,3 +82,9 @@ export enum EquipmentSlot {
   MAIN_HAND = 'MAIN_HAND',
   OFF_HAND = 'OFF_HAND',
 }
+
+// Media asset keys used in Blizzard Media API responses
+export enum MediaAssetKey {
+  Avatar = 'avatar',
+  Icon = 'icon',
+}

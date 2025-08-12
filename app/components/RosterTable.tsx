@@ -5,13 +5,14 @@ import { SearchIcon, FilterIcon } from 'lucide-react'
 import type { Member } from '../lib/types'
 import { getClassColor, getClassBadgeColor, getRankPriority } from '../lib/utils'
 import StatsCard from './StatsCard'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface RosterTableProps {
   members: Member[]
 }
 
 const RosterTable = ({ members }: RosterTableProps): React.JSX.Element => {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = React.useState('')
   const [classFilter, setClassFilter] = React.useState('')
   const [roleFilter, setRoleFilter] = React.useState('')
@@ -43,6 +44,24 @@ const RosterTable = ({ members }: RosterTableProps): React.JSX.Element => {
   const classes = [...new Set(members.map((member) => member.class))]
   const roles = [...new Set(members.map((member) => member.role))]
 
+  const handleRowNavigate = React.useCallback((name: string, race?: string, characterClass?: string): void => {
+    const pathname = `/roster/${name.toLowerCase()}`
+    const params = new URLSearchParams()
+    if (race) params.set('race', race)
+    if (characterClass) params.set('class', characterClass)
+    const url = params.toString() ? `${pathname}?${params.toString()}` : pathname
+    router.push(url)
+  }, [router])
+
+  const handleRowClick = React.useCallback((event: React.MouseEvent<HTMLTableRowElement>): void => {
+    const target = event.currentTarget
+    const name = target.dataset.name || ''
+    if (!name) return
+    const race = target.dataset.race
+    const characterClass = target.dataset.characterClass
+    handleRowNavigate(name, race, characterClass)
+  }, [handleRowNavigate])
+  
   return (
     <>
       {/* Search and Filters */}
@@ -115,6 +134,9 @@ const RosterTable = ({ members }: RosterTableProps): React.JSX.Element => {
                   Class
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-pandaria-secondary dark:text-pandaria-accent uppercase tracking-wider">
+                  Race
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-pandaria-secondary dark:text-pandaria-accent uppercase tracking-wider">
                   Role
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-pandaria-secondary dark:text-pandaria-accent uppercase tracking-wider">
@@ -123,47 +145,47 @@ const RosterTable = ({ members }: RosterTableProps): React.JSX.Element => {
               </tr>
             </thead>
             <tbody className="divide-y divide-pandaria-primary/10 dark:divide-pandaria-primary/20">
-              {filteredAndSortedMembers.map((member, index) => (
-                <Link
-                  key={index}
-                  href={{
-                    pathname: `/roster/${member.name.toLowerCase()}`
-                  }}
-                  passHref
-                  legacyBehavior
+              {filteredAndSortedMembers.map((member) => (
+                <tr
+                  key={member.name}
+                  data-name={member.name}
+                  data-race={member.race}
+                  data-character-class={member.class}
+                  onClick={handleRowClick}
+                  tabIndex={0}
+                  className="hover:bg-pandaria-paper dark:hover:bg-pandaria-primary/10 transition-colors duration-200 cursor-pointer"
+                  style={{ cursor: 'pointer' }}
                 >
-                  <tr
-                    className="hover:bg-pandaria-paper dark:hover:bg-pandaria-primary/10 transition-colors duration-200 cursor-pointer"
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div
-                          className={`w-3 h-3 rounded-full mr-2 ${getClassColor(member.class)}`}
-                        ></div>
-                        <div className="text-sm font-medium text-pandaria-dark dark:text-pandaria-light">
-                          {member.name}
-                        </div>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div
+                        className={`w-3 h-3 rounded-full mr-2 ${getClassColor(member.class)}`}
+                      ></div>
+                      <div className="text-sm font-medium text-pandaria-dark dark:text-pandaria-light">
+                        {member.name}
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
-                      {member.level}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full border ${getClassBadgeColor(member.class)}`}
-                      >
-                        {member.class}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
-                      {member.role}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
-                      {member.rank}
-                    </td>
-                  </tr>
-                </Link>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
+                    {member.level}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full border ${getClassBadgeColor(member.class)}`}
+                    >
+                      {member.class}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
+                    {member.race}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
+                    {member.role}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
+                    {member.rank}
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>

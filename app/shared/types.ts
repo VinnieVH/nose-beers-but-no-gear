@@ -396,4 +396,19 @@ export interface WowItemMedia {
   }>;
 }
 
+// Character media response (avatar and related assets)
+export interface WowCharacterMedia {
+  _links: { self: { href: string } };
+  character: {
+    key: WowKey;
+    name: string;
+    id: number;
+    realm: WowRealm;
+  };
+  assets: Array<{
+    key: string; // e.g., 'avatar'
+    value: string; // URL
+  }>;
+}
+
  

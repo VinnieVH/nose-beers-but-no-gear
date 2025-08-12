@@ -1,3 +1,5 @@
+import { WowClass } from "../shared/enums"
+
 export interface WarcraftLogsGuild {
   id: number
   name: string
@@ -12,6 +14,30 @@ export interface WarcraftLogsGuild {
   faction: {
     name: string
   }
+}
+
+export interface EquippedItem {
+  item: { id: number };
+  name: string;
+  slot: { type: string; name: string };
+  quality: { type: string; name: string };
+  media: { id: number };
+  enchantments?: Array<{
+    display_string: string;
+  }>;
+  stats?: Array<{
+    type: { type: string; name: string };
+    value: number;
+    display: { display_string: string };
+  }>;
+}
+
+export interface CharacterEquipmentResponse {
+  character: {
+    name: string;
+    realm: { name: string; slug: string };
+  };
+  equipped_items: EquippedItem[];
 }
 
 export interface WarcraftLogsReport {
@@ -68,6 +94,7 @@ export interface Member {
   name: string
   level: number
   class: string
+  race: string
   rank: string
   role: string
 }
@@ -85,6 +112,21 @@ export interface GuildData {
   guildInfo: GuildInfo
   members: Member[]
   logs: Log[]
+}
+
+// Narrow type used for static or summarized raid logs on UI pages
+export interface RaidLog {
+  raid: string;
+  date: string;
+  kills: number;
+  wipes: number;
+}
+
+export interface PerformanceEntry {
+  name: string;
+  class: WowClass;
+  raid: string;
+  percentage: number;
 }
 
 // =========================
@@ -114,3 +156,10 @@ export interface RaidHelperEventsResponse {
   eventCountTransmitted: number;
   postedEvents: RaidHelperEvent[];
 } 
+
+export interface RaidLog {
+  raid: string;
+  date: string;
+  kills: number;
+  wipes: number;
+}

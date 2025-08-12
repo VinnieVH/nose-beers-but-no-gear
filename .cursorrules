@@ -187,10 +187,7 @@
 - **Context hook**: `useContextName`
 
 ### CSS & Styling
-- **CSS Module files**: `component-name.module.css`
-- **Styled component files**: `component-name.styles.ts`
-- **CSS classes**: `block-name__element-name--modifier` (BEM)
-- **CSS custom properties**: `--primary-color`, `--font-size-large`
+- **TailwindCSS**: we use tailwindcss for everything styling related.
 
 ### Constants & Configuration
 - **Config files**: `config.ts`, `app-config.ts`

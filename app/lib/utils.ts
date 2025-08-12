@@ -1,3 +1,5 @@
+import { WowClass } from '../shared/enums'
+
 // Utility functions for class colors
 export const getClassColor = (className: string): string => {
   const classColors: Record<string, string> = {
@@ -36,6 +38,46 @@ export const getClassBadgeColor = (className: string): string => {
   }
   return badgeColors[className] || 'bg-gray-500/20 text-gray-500 border-gray-500/30'
 }
+
+/**
+ * Build a class icon URL from a readable class name using the Zamimg CDN.
+ * Example: "Death Knight" -> https://wow.zamimg.com/images/wow/icons/large/classicon_deathknight.jpg
+ */
+export const getClassIconUrl = (
+  className: string,
+): string => {
+  if (!className) return '';
+  const normalized = className.toLowerCase().replace(/\s+/g, '');
+  return `https://wow.zamimg.com/images/wow/icons/large/classicon_${normalized}.jpg`;
+};
+
+/**
+ * Convert a string to a WowClass enum value if valid.
+ */
+export const toWowClass = (value: string): WowClass => {
+  const normalized = value
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/(^|\s)\S/g, (s) => s.toUpperCase());
+
+  const map: Record<string, WowClass> = {
+    'Warrior': WowClass.Warrior,
+    'Paladin': WowClass.Paladin,
+    'Hunter': WowClass.Hunter,
+    'Rogue': WowClass.Rogue,
+    'Priest': WowClass.Priest,
+    'Death Knight': WowClass.DeathKnight,
+    'Shaman': WowClass.Shaman,
+    'Mage': WowClass.Mage,
+    'Warlock': WowClass.Warlock,
+    'Monk': WowClass.Monk,
+    'Druid': WowClass.Druid,
+    'Demon Hunter': WowClass.DemonHunter,
+    'Evoker': WowClass.Evoker,
+  };
+
+  return map[normalized];
+};
 
 export function getBaseUrl(): string {
   const vercelUrl = 'nose-beers-but-no-gear.vercel.app'
@@ -77,6 +119,51 @@ export const getClassNameById = (classId: number): string => {
     11: 'Druid'
   }
   return classMap[classId] || 'Unknown'
+}
+
+export const getRaceNameById = (raceId: number): string => {
+  const raceMap: Record<number, string> = {
+    1: 'Human',
+    2: 'Orc',
+    3: 'Dwarf',
+    4: 'Night Elf',
+    5: 'Undead',
+    6: 'Tauren',
+    7: 'Gnome',
+    8: 'Troll',
+    9: 'Goblin',
+    10: 'Blood Elf',
+    11: 'Draenei',
+    12: 'Fel Orc',
+    13: 'Naga',
+    14: 'Broken',
+    15: 'Skeleton',
+    16: 'Vrykul',
+    17: 'Tuskarr',
+    18: 'Forest Troll',
+    19: 'Taunka',
+    20: 'Northrend Skeleton',
+    21: 'Ice Troll',
+    22: 'Worgen',
+    23: 'Gilnean',
+    24: 'Pandaren',
+    25: 'Pandaren',
+    26: 'Pandaren',
+    27: 'Nightborne',
+    28: 'Highmountain Tauren',
+    29: 'Void Elf',
+    30: 'Lightforged Draenei',
+    31: 'Zandalari Troll',
+    32: 'Kul Tiran',
+    33: 'Human',
+    34: 'Dark Iron Dwarf',
+    35: 'Vulpera',
+    36: 'Mag\'har Orc',
+    37: 'Mechagnome',
+    52: 'Dracthyr',
+    70: 'Dracthyr'
+  }
+  return raceMap[raceId] || 'Unknown'
 }
 
 // Map rank numbers to readable rank names
@@ -142,4 +229,24 @@ export const getPerformanceColor = (percentage: number): string => {
 export const getColorAccent = (color?: string): string => {
   if (!color) return 'rgba(76,175,80,0.5)';
   return `rgba(${color},0.5)`;
-}; 
+};
+
+// Helper function to convert guild name to slug format
+export const getGuildSlug = (guildName: string): string => {
+  return guildName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .trim()
+}
+
+// Helper function to convert realm name to slug format
+export const getRealmSlug = (realmName: string): string => {
+  return realmName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-']/g, '') // Remove special characters except spaces, hyphens, and apostrophes
+    .replace(/['\s]+/g, '-') // Replace apostrophes and spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .trim()
+}

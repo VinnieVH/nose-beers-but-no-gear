@@ -138,7 +138,6 @@ export const GuildCrest = ({
   return (
     <canvas
       ref={canvasRef}
-      className="guild-crest"
       aria-label="Guild Crest"
     />
   )
