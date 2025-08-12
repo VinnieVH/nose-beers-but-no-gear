@@ -5,7 +5,8 @@ import type {
   WowGuildActivities,
   OAuthTokenResponse,
   WowItemMedia,
-  WowCharacterMedia 
+  WowCharacterMedia,
+  WowCharacterProfile 
 } from '@/app/shared/types'
 import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '../config/guild'
 import { getGuildSlug, getRealmSlug } from './utils'
@@ -202,6 +203,15 @@ export class WowAPI {
     const media = await this.makeGetRequest<WowCharacterMedia>(endpoint, {}, this.getNamespace());
     const avatar = media?.assets?.find((a) => a.key === 'avatar');
     return avatar?.value ?? null;
+  }
+
+  /**
+   * Fetches the core character profile
+   * @param characterName - The character name (lowercase)
+   */
+  async fetchCharacterProfile(characterName: string): Promise<WowCharacterProfile> {
+    const endpoint = `/profile/wow/character/${getRealmSlug(GUILD_REALM)}/${characterName.toLowerCase()}`
+    return this.makeGetRequest<WowCharacterProfile>(endpoint, {}, this.getNamespace())
   }
 
   /**

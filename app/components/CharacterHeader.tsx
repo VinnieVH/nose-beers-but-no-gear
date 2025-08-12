@@ -1,6 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
-import { getClassIconUrl } from '@/app/lib/utils'
+import { getClassIconUrl, getItemLevelBadgeClasses } from '@/app/lib/utils'
 import type { WowClass } from '@/app/shared/enums'
 
 interface CharacterHeaderProps {
@@ -8,9 +8,10 @@ interface CharacterHeaderProps {
   avatarUrl: string
   subtitle: string
   wowClass: WowClass
+  itemLevel: number | null
 }
 
-const CharacterHeader = ({ characterName, avatarUrl, subtitle, wowClass }: CharacterHeaderProps): React.JSX.Element => {
+const CharacterHeader = ({ characterName, avatarUrl, subtitle, wowClass, itemLevel }: CharacterHeaderProps): React.JSX.Element => {
   return (
     <section className="character-header rounded-xl border border-pandaria-primary/20 dark:border-pandaria-primary/30 bg-white/80 dark:bg-pandaria-dark/40 shadow-md">
       <div className="flex items-center gap-4 md:gap-6 p-4 md:p-6">
@@ -42,7 +43,14 @@ const CharacterHeader = ({ characterName, avatarUrl, subtitle, wowClass }: Chara
           <p className="text-pandaria-secondary dark:text-pandaria-accent mt-1 md:mt-2 text-sm md:text-base">
             {subtitle}
           </p>
-        </div>
+        </div>  
+        {Number.isFinite(itemLevel) && itemLevel !== null && (
+          <div className="flex items-center gap-2">
+            <span className={`px-3 py-1 rounded-full border text-sm md:text-base font-semibold ${getItemLevelBadgeClasses(itemLevel)}`}>
+              ilvl {Math.round(itemLevel)}
+            </span>
+          </div>
+        )}
       </div>
     </section>
   )

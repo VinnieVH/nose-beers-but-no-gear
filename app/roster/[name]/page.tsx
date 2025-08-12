@@ -1,12 +1,11 @@
-import { getBaseUrl } from '@/app/lib/utils';
+import { getBaseUrl, toWowClass } from '@/app/lib/utils';
 import React from 'react';
 import CharacterPane from '@/app/components/CharacterPane';
 import CharacterHeader from '@/app/components/CharacterHeader';
-import type { WowItemMedia } from '@/app/shared/types';
+import type { WowCharacterProfile, WowItemMedia } from '@/app/shared/types';
 import { EquipmentSlot } from '@/app/shared/enums';
 import { CharacterEquipmentResponse, EquippedItem } from '@/app/lib/types';
 import Link from 'next/link';
-import { toWowClass } from '@/app/lib/utils';
 import type { WowClass } from '@/app/shared/enums';
 
 async function getCharacterEquipment(name: string): Promise<CharacterEquipmentResponse> {
@@ -31,8 +30,18 @@ async function getCharacterAvatar(name: string): Promise<string | null> {
     next: { revalidate: 60 },
   });
   if (!res.ok) return null;
-  const data = (await res.json()) as { avatarUrl?: string | null };
-  return data?.avatarUrl ?? null;
+  interface AvatarResponse { avatarUrl?: string | null }
+  const data: AvatarResponse = await res.json();
+  return data && typeof data.avatarUrl === 'string' ? data.avatarUrl : null;
+}
+
+async function getCharacterProfile(name: string): Promise<WowCharacterProfile> {
+  const baseUrl = getBaseUrl();
+  const res = await fetch(`${baseUrl}/api/blizzard/character-profile?name=${encodeURIComponent(name)}`, {
+    next: { revalidate: 60 },
+  });
+  if (!res.ok) throw new Error('Failed to fetch character profile');
+  return res.json();
 }
 
 // Guard: ensure arbitrary string is a known EquipmentSlot
@@ -42,24 +51,25 @@ function isEquipmentSlot(value: string): value is EquipmentSlot {
 }
 
 const CharacterEquipmentPage = async (
-  { params, searchParams }: { params: Promise<{ name: string }>; searchParams?: Promise<{ race?: string; class?: string }> }
+  { params }: { params: Promise<{ name: string }> }
 ): Promise<React.JSX.Element> => {
   let equipment: CharacterEquipmentResponse | null = null;
   let error: string | null = null;
   let itemMediaList: (WowItemMedia | null)[] = [];
-  let passedRace: string | null = null;
-  let passedClass: WowClass | null = null;
+  let wowClass: WowClass | null = null;
+  let itemLevel: number | null = null;
   const { name } = await params;
-  if (searchParams) {
-    const sp = await searchParams;
-    if (sp?.race && sp?.class) {
-      passedRace = sp.race;
-      passedClass = toWowClass(sp.class);
-    }
-  }
   let avatarUrl: string | null = null;
   try {
-    equipment = await getCharacterEquipment(name);
+    // Fetch equipment and profile concurrently
+    const [equip, profile] = await Promise.all([
+      getCharacterEquipment(name),
+      getCharacterProfile(name),
+    ]);
+    equipment = equip;
+    wowClass = toWowClass(profile?.character_class?.name ?? '');
+    itemLevel = profile?.average_item_level ?? null;
+
 
     if (equipment) {
       ;[itemMediaList, avatarUrl] = await Promise.all([
@@ -101,27 +111,26 @@ const CharacterEquipmentPage = async (
           ← Back to roster
         </Link>
       </div>
-      {passedClass && (
+      {wowClass && (
       <div className="mb-6">
         <CharacterHeader
           characterName={equipment?.character.name ?? name}
           avatarUrl={avatarUrl ?? '/dd/images/wipe-inc.jpg'}
           subtitle="Equipped Items"
-          wowClass={passedClass}
+          wowClass={wowClass}
+          itemLevel={itemLevel}
         />
       </div>
       )}
       {error && <div className="text-red-500">{error}</div>}
       {!equipment ? (
         <div>Loading...</div>
-      ) : passedRace ? (
+      ) : (
         <CharacterPane
           items={equipment.equipped_items}
           mediaByItemMediaId={mediaByItemMediaId}
           characterName={equipment.character.name}
         />
-      ) : (
-        <div>No race or class passed</div>
       )}
     </div>
   );

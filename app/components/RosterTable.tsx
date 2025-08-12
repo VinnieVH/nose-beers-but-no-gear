@@ -3,7 +3,7 @@
 import React from 'react'
 import { SearchIcon, FilterIcon } from 'lucide-react'
 import type { Member } from '../lib/types'
-import { getClassColor, getClassBadgeColor, getRankPriority } from '../lib/utils'
+import { getClassColor, getClassBadgeColor, getRankPriority, getItemLevelBadgeClasses } from '../lib/utils'
 import StatsCard from './StatsCard'
 import { useRouter } from 'next/navigation'
 
@@ -16,6 +16,7 @@ const RosterTable = ({ members }: RosterTableProps): React.JSX.Element => {
   const [searchTerm, setSearchTerm] = React.useState('')
   const [classFilter, setClassFilter] = React.useState('')
   const [roleFilter, setRoleFilter] = React.useState('')
+  const [sortBy, setSortBy] = React.useState<'level' | 'itemLevel'>('itemLevel')
 
   // Filter and sort members
   const filteredAndSortedMembers = React.useMemo(() => {
@@ -29,39 +30,38 @@ const RosterTable = ({ members }: RosterTableProps): React.JSX.Element => {
       return matchesSearch && matchesClass && matchesRole
     })
 
-    // Then sort by level (descending) and then by rank priority (descending)
+    // Then sort by chosen metric (level or average item level) and then by rank priority
     return filtered.sort((a, b) => {
-      // First sort by level (descending)
-      if (a.level !== b.level) {
-        return b.level - a.level
+      if (sortBy === 'itemLevel') {
+        if (a.averageItemLevel !== b.averageItemLevel) {
+          return b.averageItemLevel - a.averageItemLevel
+        }
+      } else {
+        if (a.level !== b.level) {
+          return b.level - a.level
+        }
       }
       // If levels are equal, sort by rank priority (descending)
       return getRankPriority(b.rank) - getRankPriority(a.rank)
     })
-  }, [members, searchTerm, classFilter, roleFilter])
+  }, [members, searchTerm, classFilter, roleFilter, sortBy])
 
   // Get unique classes and roles for filters
   const classes = [...new Set(members.map((member) => member.class))]
   const roles = [...new Set(members.map((member) => member.role))]
 
-  const handleRowNavigate = React.useCallback((name: string, race?: string, characterClass?: string): void => {
+  const handleRowNavigate = React.useCallback((name: string): void => {
     const pathname = `/roster/${name.toLowerCase()}`
-    const params = new URLSearchParams()
-    if (race) params.set('race', race)
-    if (characterClass) params.set('class', characterClass)
-    const url = params.toString() ? `${pathname}?${params.toString()}` : pathname
-    router.push(url)
+    router.push(pathname)
   }, [router])
 
   const handleRowClick = React.useCallback((event: React.MouseEvent<HTMLTableRowElement>): void => {
     const target = event.currentTarget
     const name = target.dataset.name || ''
     if (!name) return
-    const race = target.dataset.race
-    const characterClass = target.dataset.characterClass
-    handleRowNavigate(name, race, characterClass)
+    handleRowNavigate(name)
   }, [handleRowNavigate])
-  
+
   return (
     <>
       {/* Search and Filters */}
@@ -114,6 +114,19 @@ const RosterTable = ({ members }: RosterTableProps): React.JSX.Element => {
                 <FilterIcon className="h-4 w-4 text-pandaria-dark/50 dark:text-pandaria-light/50" />
               </div>
             </div>
+            <div className="relative">
+              <select
+                className="bg-pandaria-paper dark:bg-pandaria-dark/80 text-pandaria-dark dark:text-pandaria-light pl-4 pr-8 py-2 rounded-md border border-pandaria-primary/20 dark:border-pandaria-primary/30 focus:outline-none focus:ring-2 focus:ring-pandaria-primary focus:border-transparent appearance-none"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'level' | 'itemLevel')}
+              >
+                <option value="level">Sort by Level</option>
+                <option value="itemLevel">Sort by Avg Item Level</option>
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <FilterIcon className="h-4 w-4 text-pandaria-dark/50 dark:text-pandaria-light/50" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -129,6 +142,9 @@ const RosterTable = ({ members }: RosterTableProps): React.JSX.Element => {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-pandaria-secondary dark:text-pandaria-accent uppercase tracking-wider">
                   Level
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-pandaria-secondary dark:text-pandaria-accent uppercase tracking-wider">
+                  Avg iLvl
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-pandaria-secondary dark:text-pandaria-accent uppercase tracking-wider">
                   Class
@@ -149,8 +165,6 @@ const RosterTable = ({ members }: RosterTableProps): React.JSX.Element => {
                 <tr
                   key={member.name}
                   data-name={member.name}
-                  data-race={member.race}
-                  data-character-class={member.class}
                   onClick={handleRowClick}
                   tabIndex={0}
                   className="hover:bg-pandaria-paper dark:hover:bg-pandaria-primary/10 transition-colors duration-200 cursor-pointer"
@@ -168,6 +182,11 @@ const RosterTable = ({ members }: RosterTableProps): React.JSX.Element => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
                     {member.level}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-pandaria-dark dark:text-pandaria-light/80">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getItemLevelBadgeClasses(member.averageItemLevel)}`}>
+                      {member.averageItemLevel}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span

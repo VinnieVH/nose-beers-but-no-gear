@@ -97,6 +97,7 @@ export interface Member {
   race: string
   rank: string
   role: string
+  averageItemLevel: number
 }
 
 export interface Log {

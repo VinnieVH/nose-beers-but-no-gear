@@ -231,6 +231,18 @@ export const getColorAccent = (color?: string): string => {
   return `rgba(${color},0.5)`;
 };
 
+/**
+ * Get Tailwind classes for an item level badge based on thresholds.
+ */
+export const getItemLevelBadgeClasses = (itemLevel: number): string => {
+  if (!Number.isFinite(itemLevel)) return 'bg-quality-common/15 text-quality-common border-quality-common/30'
+  if (itemLevel >= 480) return 'bg-quality-legendary/15 text-quality-legendary border-quality-legendary/30'
+  if (itemLevel >= 470) return 'bg-quality-epic/15 text-quality-epic border-quality-epic/30'
+  if (itemLevel >= 450) return 'bg-quality-rare/15 text-quality-rare border-quality-rare/30'
+  if (itemLevel >= 400) return 'bg-quality-uncommon/15 text-quality-uncommon border-quality-uncommon/30'
+  return 'bg-quality-common/15 text-quality-common border-quality-common/30'
+}
+
 // Helper function to convert guild name to slug format
 export const getGuildSlug = (guildName: string): string => {
   return guildName

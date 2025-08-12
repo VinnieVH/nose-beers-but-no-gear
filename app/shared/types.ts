@@ -411,4 +411,54 @@ export interface WowCharacterMedia {
   }>;
 }
 
+// Character profile (core character endpoint)
+export interface WowHref {
+  href: string
+}
+
+export interface WowCharacterProfile {
+  _links: WowLinks
+  id: number
+  name: string
+  gender: {
+    type: 'MALE' | 'FEMALE'
+    name: string
+  }
+  faction: WowFaction
+  race: {
+    key: WowKey
+    name: string
+    id: number
+  }
+  character_class: {
+    key: WowKey
+    name: string
+    id: number
+  }
+  active_spec: {
+    key: WowKey
+    name: string
+    id: number
+  }
+  realm: WowRealm
+  guild?: WowGuildReference
+  level: number
+  experience: number
+  achievement_points: number
+  achievements: WowHref
+  titles: WowHref
+  pvp_summary: WowHref
+  media: WowHref
+  last_login_timestamp: number
+  average_item_level: number
+  equipped_item_level: number
+  specializations: WowHref
+  statistics: WowHref
+  equipment: WowHref
+  appearance: WowHref
+  active_title?: {
+    name: string
+  }
+}
+
  

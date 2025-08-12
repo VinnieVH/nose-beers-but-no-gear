@@ -56,12 +56,12 @@ export default async function Home(): Promise<React.JSX.Element> {
       description: 'A cheeky guild of mischief-makers focused on having fun while still clearing content.'
     }
     members = [
-      { name: 'Brewmaster', level: 90, class: WowClass.Monk, race: 'Pandaren', rank: 'Guild Master', role: MemberRole.Tank },
-      { name: 'MistyWhiskers', level: 90, class: WowClass.Monk, race: 'Pandaren', rank: 'Officer', role: MemberRole.Healer },
-      { name: 'PawsOfFury', level: 90, class: WowClass.Monk, race: 'Pandaren', rank: 'Officer', role: MemberRole.DPS },
-      { name: 'NoodleMaster', level: 90, class: WowClass.Monk, race: 'Pandaren', rank: 'Chef', role: MemberRole.Feeder },
-      { name: 'BambooChewer', level: 90, class: WowClass.Druid, race: 'Pandaren', rank: 'Raider', role: MemberRole.Tank },
-      { name: 'MistyMist', level: 90, class: WowClass.Mage, race: 'Pandaren', rank: 'Raider', role: MemberRole.DPS }
+      { name: 'Brewmaster', level: 90, class: WowClass.Monk, race: 'Pandaren', rank: 'Guild Master', role: MemberRole.Tank, averageItemLevel: 0 },
+      { name: 'MistyWhiskers', level: 90, class: WowClass.Monk, race: 'Pandaren', rank: 'Officer', role: MemberRole.Healer, averageItemLevel: 0 },
+      { name: 'PawsOfFury', level: 90, class: WowClass.Monk, race: 'Pandaren', rank: 'Officer', role: MemberRole.DPS, averageItemLevel: 0 },
+      { name: 'NoodleMaster', level: 90, class: WowClass.Monk, race: 'Pandaren', rank: 'Chef', role: MemberRole.Feeder, averageItemLevel: 0 },
+      { name: 'BambooChewer', level: 90, class: WowClass.Druid, race: 'Pandaren', rank: 'Raider', role: MemberRole.Tank, averageItemLevel:0 },
+      { name: 'MistyMist', level: 90, class: WowClass.Mage, race: 'Pandaren', rank: 'Raider', role: MemberRole.DPS, averageItemLevel: 0 }
     ]
   }
 
