@@ -32,7 +32,6 @@ app/
 ├── config/
 │   └── guild.ts              # Reads NEXT_PUBLIC_* guild settings
 ├── lib/
-│   ├── dataTransformer.ts    # WCL → app data mapping and fallbacks
 │   ├── utils.ts              # Utilities (class colors, slugs, base URL)
 │   ├── warcraftlogsApi.ts    # WCL OAuth + GraphQL client
 │   └── wowApi.ts             # Blizzard OAuth + REST client

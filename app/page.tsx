@@ -48,7 +48,7 @@ export default async function Home(): Promise<React.JSX.Element> {
     // Use fallback data if API fails
     guildInfo = {
       name: 'Nose Beers But No Gear',
-      realm: 'Area 52',
+      realm: 'Pyrewood Village',
       faction: WowFaction.Alliance,
       created: '2012-09-25T00:00:00Z',
       level: 25,
@@ -56,12 +56,12 @@ export default async function Home(): Promise<React.JSX.Element> {
       description: 'A cheeky guild of mischief-makers focused on having fun while still clearing content.'
     }
     members = [
-      { name: 'Brewmaster', level: 90, class: WowClass.Monk, rank: 'Guild Master', role: MemberRole.Tank },
-      { name: 'MistyWhiskers', level: 90, class: WowClass.Monk, rank: 'Officer', role: MemberRole.Healer },
-      { name: 'PawsOfFury', level: 90, class: WowClass.Monk, rank: 'Officer', role: MemberRole.DPS },
-      { name: 'NoodleMaster', level: 90, class: WowClass.Monk, rank: 'Chef', role: MemberRole.Feeder },
-      { name: 'BambooChewer', level: 90, class: WowClass.Druid, rank: 'Raider', role: MemberRole.Tank },
-      { name: 'MistyMist', level: 90, class: WowClass.Mage, rank: 'Raider', role: MemberRole.DPS }
+      { name: 'Brewmaster', level: 90, class: WowClass.Monk, race: 'Pandaren', rank: 'Guild Master', role: MemberRole.Tank },
+      { name: 'MistyWhiskers', level: 90, class: WowClass.Monk, race: 'Pandaren', rank: 'Officer', role: MemberRole.Healer },
+      { name: 'PawsOfFury', level: 90, class: WowClass.Monk, race: 'Pandaren', rank: 'Officer', role: MemberRole.DPS },
+      { name: 'NoodleMaster', level: 90, class: WowClass.Monk, race: 'Pandaren', rank: 'Chef', role: MemberRole.Feeder },
+      { name: 'BambooChewer', level: 90, class: WowClass.Druid, race: 'Pandaren', rank: 'Raider', role: MemberRole.Tank },
+      { name: 'MistyMist', level: 90, class: WowClass.Mage, race: 'Pandaren', rank: 'Raider', role: MemberRole.DPS }
     ]
   }
 
