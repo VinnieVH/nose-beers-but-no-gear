@@ -25,7 +25,7 @@ const CharacterHeader = ({ characterName, avatarUrl, subtitle, wowClass, itemLev
             priority
           />
           {wowClass && (
-            <div className="absolute bottom-0 left">
+            <div className="absolute bottom-0 left-0">
               <Image
                 src={getClassIconUrl(wowClass)}
                 alt={wowClass}

@@ -184,9 +184,9 @@ export const getRankName = (rank: number): string => {
  * @param locale - Optional locale string (default 'en-US')
  * @returns Formatted date string
  */
-export const formatDate = (date: string | number, locale: string = 'en-US'): string => {
+export const formatDate = (date: Date | string | number, locale: string = 'en-US'): string => {
   if (!date) return '';
-  const d = typeof date === 'string' ? new Date(date) : new Date(date);
+  const d = date instanceof Date ? date : (typeof date === 'string' ? new Date(date) : new Date(date));
   return d.toLocaleDateString(locale);
 };
 
@@ -196,11 +196,12 @@ export const formatDate = (date: string | number, locale: string = 'en-US'): str
  * @param locale - Optional locale string (default 'en-US')
  * @returns Formatted date+time string
  */
-export const formatDateTime = (timestamp: number | string, locale: string = 'en-US'): string => {
+export const formatDateTime = (timestamp: Date | number | string, locale: string = 'en-US'): string => {
   if (!timestamp) return '';
   let d: Date;
-  if (typeof timestamp === 'number') {
-    // If it's in seconds, convert to ms
+  if (timestamp instanceof Date) {
+    d = timestamp;
+  } else if (typeof timestamp === 'number') {
     d = new Date(timestamp > 1e12 ? timestamp : timestamp * 1000);
   } else {
     d = new Date(timestamp);

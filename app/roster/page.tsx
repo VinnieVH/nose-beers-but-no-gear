@@ -4,6 +4,7 @@ import RosterTable from '../components/RosterTable'
 import { getBaseUrl } from '../lib/utils'
 import { WowClass, MemberRole } from '../shared/enums'
 
+
 export default async function Roster(): Promise<React.JSX.Element> {
   let members: Member[]
 
@@ -28,8 +29,8 @@ export default async function Roster(): Promise<React.JSX.Element> {
       { name: 'Naturedruid', level: 60, class: WowClass.Druid, race: 'Human', role: MemberRole.DPS, rank: 'Member', averageItemLevel: 0 },
       { name: 'Deathknight', level: 60, class: WowClass.DeathKnight, race: 'Human', role: MemberRole.Tank, rank: 'Member', averageItemLevel: 0 },
       { name: 'Huntmaster', level: 60, class: WowClass.Hunter, race: 'Human', role: MemberRole.DPS, rank: 'Member', averageItemLevel: 0 },
-      { name: 'Shamanic', level: 60, class: WowClass.Shaman, race: 'Human', role: 'Healer', rank: 'Member', averageItemLevel: 0 },
-      { name: 'Warlocky', level: 60, class: WowClass.Warlock, race: 'Human', role: 'DPS', rank: 'Member', averageItemLevel: 0 }
+      { name: 'Shamanic', level: 60, class: WowClass.Shaman, race: 'Human', role: MemberRole.Healer, rank: 'Member', averageItemLevel: 0 },
+      { name: 'Warlocky', level: 60, class: WowClass.Warlock, race: 'Human', role: MemberRole.DPS, rank: 'Member', averageItemLevel: 0 }
     ]
   }
 
@@ -38,8 +39,7 @@ export default async function Roster(): Promise<React.JSX.Element> {
       <h1 className="text-3xl font-bold text-pandaria-secondary dark:text-pandaria-accent mb-8">
         Guild Roster
       </h1>
-      
-      <RosterTable members={members} />
+        <RosterTable members={members} />
     </div>
   )
 } 

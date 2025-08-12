@@ -124,7 +124,13 @@ const CharacterEquipmentPage = async (
       )}
       {error && <div className="text-red-500">{error}</div>}
       {!equipment ? (
-        <div>Loading...</div>
+        <div className="rounded-xl border border-pandaria-primary/20 dark:border-pandaria-primary/30 bg-white/80 dark:bg-pandaria-dark/40 p-6">
+          <div className="space-y-3">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="h-6 w-full animate-pulse rounded bg-pandaria-primary/10 dark:bg-pandaria-primary/20" />
+            ))}
+          </div>
+        </div>
       ) : (
         <CharacterPane
           items={equipment.equipped_items}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '@/app/config/guild'
 import { WowAPI } from '@/app/lib/wowApi'
+import { z } from 'zod'
 
 // Create instance
 const wowApi = new WowAPI()
@@ -32,7 +33,23 @@ export async function GET(): Promise<NextResponse> {
       )
     }
 
-    return NextResponse.json(rosterData)
+    // Minimal schema validation to prevent downstream surprises
+    const MemberSchema = z.object({
+      character: z.object({
+        name: z.string(),
+        level: z.number(),
+        playable_class: z.object({ id: z.number() }),
+        playable_race: z.object({ id: z.number() }),
+      }),
+      rank: z.number(),
+    })
+    const RosterSchema = z.object({ members: z.array(MemberSchema), guild: z.any() })
+    const parsed = RosterSchema.safeParse(rosterData)
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid roster payload' }, { status: 502 })
+    }
+
+    return NextResponse.json(parsed.data)
   } catch (error) {
     console.error('Error fetching roster data:', error)
     return NextResponse.json(

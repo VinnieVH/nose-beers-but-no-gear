@@ -4,7 +4,7 @@ import { UsersIcon, TrophyIcon } from 'lucide-react'
 import { DISCORD_INVITE_URL } from './config/guild'
 import type { GuildInfo, Member } from './lib/types'
 import type { WowGuildMember } from './shared/types'
-import { getBaseUrl, getClassColor, getClassNameById } from './lib/utils'
+import { getBaseUrl, getClassColor, getClassNameById, getRaceNameById, toWowClass } from './lib/utils'
 import { WowClass, MemberRole, WowFaction } from './shared/enums'
 
 export default async function Home(): Promise<React.JSX.Element> {
@@ -25,9 +25,9 @@ export default async function Home(): Promise<React.JSX.Element> {
         name: responseData.guild.name,
         realm: responseData.guild.realm.name,
         faction: responseData.guild.faction.name,
-        created: responseData.guild.created_timestamp
-          ? new Date(responseData.guild.created_timestamp).toISOString()
-          : '',
+         created: responseData.guild.created_timestamp
+          ? new Date(responseData.guild.created_timestamp)
+          : new Date(NaN),
         level: 0, // Not available in Blizzard API
         memberCount: responseData.members.length,
         description: '' // Not available in Blizzard API
@@ -35,9 +35,11 @@ export default async function Home(): Promise<React.JSX.Element> {
       members = responseData.members.map((m: WowGuildMember) => ({
         name: m.character.name,
         level: m.character.level,
-        class: getClassNameById(m.character.playable_class.id),
+        class: toWowClass(getClassNameById(m.character.playable_class.id)),
+        race: getRaceNameById(m.character.playable_race.id),
         rank: m.rank.toString(),
-        role: '' // Not available in Blizzard API
+        role: MemberRole.Member,
+        averageItemLevel: 0,
       }))
 
     } else {
@@ -50,7 +52,7 @@ export default async function Home(): Promise<React.JSX.Element> {
       name: 'Nose Beers But No Gear',
       realm: 'Pyrewood Village',
       faction: WowFaction.Alliance,
-      created: '2012-09-25T00:00:00Z',
+      created: new Date('2012-09-25T00:00:00Z'),
       level: 25,
       memberCount: 6,
       description: 'A cheeky guild of mischief-makers focused on having fun while still clearing content.'
@@ -142,11 +144,11 @@ export default async function Home(): Promise<React.JSX.Element> {
                 <span className="text-pandaria-dark/70 dark:text-pandaria-light/70">
                   Founded:
                 </span>
-                <span className="text-pandaria-dark dark:text-pandaria-light font-medium">
-                  {guildInfo.created
-                    ? new Date(guildInfo.created).toLocaleDateString()
-                    : 'When the mists parted'}
-                </span>
+               <span className="text-pandaria-dark dark:text-pandaria-light font-medium">
+                  {Number.isNaN(guildInfo.created.getTime())
+                    ? 'When the mists parted'
+                    : guildInfo.created.toLocaleDateString()}
+               </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-pandaria-dark/70 dark:text-pandaria-light/70">
@@ -186,7 +188,7 @@ export default async function Home(): Promise<React.JSX.Element> {
                     {member.name}
                   </span>
                   <span className="ml-auto text-pandaria-primary dark:text-pandaria-primaryLight text-sm">
-                    {member.role === 'Feeder'
+                    {member.role === MemberRole.Feeder
                       ? '🍜 ' + member.role
                       : member.role}
                   </span>

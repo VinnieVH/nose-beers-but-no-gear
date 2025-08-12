@@ -1,4 +1,4 @@
-import { WowClass } from "../shared/enums"
+import { MemberRole, WowClass } from "../shared/enums"
 
 export interface WarcraftLogsGuild {
   id: number
@@ -84,7 +84,7 @@ export interface GuildInfo {
   name: string
   realm: string
   faction: string
-  created: string
+  created: Date
   level: number
   memberCount: number
   description: string
@@ -93,10 +93,10 @@ export interface GuildInfo {
 export interface Member {
   name: string
   level: number
-  class: string
+  class: WowClass
   race: string
   rank: string
-  role: string
+  role: MemberRole
   averageItemLevel: number
 }
 
