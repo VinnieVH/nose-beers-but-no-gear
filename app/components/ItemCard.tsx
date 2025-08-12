@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import type { EquippedItem } from '../roster/[name]/page';
+import type { EquippedItem } from '@/app/lib/types';
 import type { WowItemMedia } from '../shared/types';
 
 interface ItemCardProps {
