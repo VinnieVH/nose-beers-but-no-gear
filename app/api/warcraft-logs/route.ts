@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { transformGuildData, getFallbackData } from '../../lib/dataTransformer'
+import { transformGuildData } from '../../lib/dataTransformer'
 import { fetchAllGuildData } from '../../lib/warcraftlogsApi'
 import { GUILD_NAME, GUILD_REALM, GUILD_REGION } from '@/app/config/guild'
 
@@ -25,8 +25,6 @@ export async function GET(): Promise<NextResponse> {
   } catch (error) {
     console.error('Failed to fetch guild data:', error)
     
-    // Return fallback data if API fails
-    const fallbackData = getFallbackData()
     
     return NextResponse.json(fallbackData)
   }
